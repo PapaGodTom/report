@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Field Report">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<title>Field Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-family:'Comfortaa',sans-serif;overscroll-behavior:none}
+.app{max-width:480px;margin:0 auto;height:100%;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;background:#f5f3ef;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
+.screen{display:none;flex-direction:column;height:100%;max-height:100%;overflow:hidden;min-height:0}
+.screen.active{display:flex;height:100%;max-height:100%}
+/* NAV */
+.nav{padding-top:calc(env(safe-area-inset-top,0px) + 20px);padding-left:20px;padding-right:20px;padding-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f5f3ef}
+.nav-title{font-size:13px;font-weight:600;letter-spacing:.06em;color:#8a8680;text-transform:uppercase;flex:1;text-align:center;padding:0 8px}
+.nav-back{font-size:13px;color:#3d3a35;display:flex;align-items:center;gap:4px;cursor:pointer;min-width:70px;font-weight:600;background:none;border:none;font-family:'Comfortaa',sans-serif}
+.nav-right{min-width:70px;display:flex;justify-content:flex-end}
+.pill{cursor:pointer;border:none;border-radius:12px;padding:8px 13px;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;gap:5px}
+.pill-dark{background:#2d2a26;color:#f5f3ef;box-shadow:0 4px 10px rgba(45,42,38,0.28)}
+.pill-orange{background:#c8794a;color:#fff;box-shadow:0 4px 10px rgba(200,121,74,0.32)}
+/* PROJECTS */
+.proj-body{flex:1;padding:0 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px)+24px)}
+.proj-wrap{position:relative;margin-bottom:10px;overflow:hidden;border-radius:18px}
+.proj-card{background:#fff;border-radius:18px;padding:16px 18px;border:0.5px solid #e8e5de;box-shadow:0 2px 8px rgba(45,42,38,0.06);cursor:pointer;display:flex;align-items:center;gap:14px;position:relative;transition:transform .2s ease;user-select:none}
+.proj-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 18px 18px 0;overflow:hidden}
+.proj-act-edit{background:#e8e5de;color:#2d2a26;border:none;cursor:pointer;padding:0 18px;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.proj-act-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 18px;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.proj-icon{width:46px;height:46px;border-radius:12px;background:#f0ede8;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.proj-info{flex:1;min-width:0}
+.proj-name{font-size:16px;font-weight:700;color:#2d2a26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-meta{font-size:12px;color:#a09b93;margin-top:3px}
+.proj-count{font-size:11px;font-weight:700;background:#e8e5de;color:#6b6760;padding:3px 8px;border-radius:20px;flex-shrink:0}
+/* TOOLBAR */
+.toolbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 20px;flex-shrink:0;background:#f5f3ef}
+.tb{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 8px;border-radius:14px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif}
+.tb-dark{background:#2d2a26;color:#f5f3ef;box-shadow:0 4px 12px rgba(45,42,38,0.28)}
+.tb-grey{background:#e8e5de;color:#6b6760;box-shadow:0 3px 8px rgba(45,42,38,0.10)}
+.tb-orange{background:#c8794a;color:#fff;box-shadow:0 4px 12px rgba(200,121,74,0.30)}
+.tb-reorder{background:#e8e5de;color:#6b6760;box-shadow:0 3px 8px rgba(45,42,38,0.10)}
+.tb-reorder.on{background:#2d2a26;color:#f5f3ef}
+/* LIST */
+.list-body{flex:1;padding:0 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px)+24px)}
+.list-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;cursor:pointer;background:#fff;overflow:hidden;min-width:0;margin-bottom:10px;border:0.5px solid #e8e5de;box-shadow:0 2px 8px rgba(45,42,38,0.06)}
+.list-item.selected{background:#f0ede8;border-color:#c5bfb5}
+.list-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.list-thumb-empty{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#ede9e2;display:flex;align-items:center;justify-content:center}
+.list-info{flex:1;min-width:0;overflow:hidden}
+.list-label{font-size:14px;font-weight:700;color:#2d2a26;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.list-sub{font-size:12px;color:#a09b93;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0}
+.badge-done{background:#e6f3de;color:#3b6d11}
+.badge-placed{background:#ddeaf7;color:#1a4d7a}
+.badge-other{background:#e8e5de;color:#6b6760}
+.chk{width:22px;height:22px;border-radius:50%;border:2px solid #d3d1c7;background:#fff;flex-shrink:0;display:none;align-items:center;justify-content:center}
+.reorder-mode .chk{display:flex}
+.list-item.selected .chk{background:#2d2a26;border-color:#2d2a26}
+.empty-msg{padding:60px 24px;text-align:center;color:#a09b93;font-size:14px;line-height:1.8}
+/* REORDER BAR */
+.rbar{display:none;flex-shrink:0;align-items:center;justify-content:space-between;padding:10px 16px;background:#2d2a26;padding-bottom:calc(env(safe-area-inset-bottom,0px)+10px)}
+.rbar.on{display:flex}
+.rbar-info{font-size:13px;font-weight:600;color:#f5f3ef}
+.rbar-btns{display:flex;gap:8px}
+.rbar-btn{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif}
+.rbar-ud{background:#e8e5de;color:#2d2a26}
+.rbar-done{background:#c8794a;color:#fff}
+/* FLOOR PLAN */
+.fp-body{flex:1;overflow:hidden;position:relative;background:#2d2a26}
+.fp-scroll{width:100%;height:100%;overflow:scroll;-webkit-overflow-scrolling:touch}
+.fp-inner{position:relative;display:inline-block;min-width:100%}
+.fp-inner img{display:block;max-width:none}
+.fp-dot{position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid #fff;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.fp-dot-done{background:#639922}
+.fp-dot-other{background:#c8794a}
+.fp-empty-wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center}
+.fp-empty-wrap p{font-size:14px;color:#8a8680;line-height:1.7}
+.fp-hint{position:absolute;bottom:44px;left:0;right:0;background:rgba(45,42,38,0.85);color:#f5f3ef;font-size:12px;padding:10px 16px;text-align:center;font-weight:500}
+.fp-addmore{position:absolute;bottom:10px;right:16px;background:#3d5a2a;color:#fff;border:none;border-radius:14px;padding:10px 16px;font-size:12px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.fp-addmore.on{background:#c8794a}
+/* DETAIL */
+.det-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f3ef;padding:0 20px;min-height:0;max-height:100%;padding-bottom:calc(env(safe-area-inset-bottom,0px)+32px)}
+.photo-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;border:0.5px solid #e8e5de;box-shadow:0 2px 8px rgba(45,42,38,0.06)}
+.photo-empty-box{height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;background:#faf9f7}
+.photo-empty-box span{font-size:13px;color:#a09b93}
+.photo-fab-row{display:flex;gap:10px;padding:12px 14px;border-top:0.5px solid #f0ede8}
+.fab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:12px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'Comfortaa',sans-serif}
+.fab-grey{background:#e8e5de;color:#2d2a26;box-shadow:0 3px 8px rgba(45,42,38,0.12)}
+.fab-red{background:#fbeae8;color:#c0432b;box-shadow:0 3px 8px rgba(192,67,43,0.14)}
+.fields-card{background:#fff;border-radius:16px;overflow:hidden;border:0.5px solid #e8e5de;margin-bottom:12px;box-shadow:0 2px 8px rgba(45,42,38,0.06)}
+.frow{padding:14px 16px;border-bottom:0.5px solid #f0ede8;position:relative}
+.frow:last-child{border-bottom:none}
+.flbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px;font-weight:700}
+.finput{font-size:14px;color:#2d2a26;border:none;background:transparent;width:100%;outline:none;font-family:'Comfortaa',sans-serif}
+.finput::placeholder{color:#c5bfb5}
+.btn-del{width:100%;padding:14px;border-radius:14px;background:#fbeae8;color:#c0432b;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 12px rgba(192,67,43,0.14)}
+/* EXPORT */
+.exp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f3ef;padding:0 20px;padding-bottom:calc(env(safe-area-inset-bottom,0px)+32px)}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a09b93;margin:0 4px 10px}
+.exp-card{background:#fff;border-radius:16px;overflow:hidden;border:0.5px solid #e8e5de;margin-bottom:12px;box-shadow:0 2px 8px rgba(45,42,38,0.06)}
+.exp-field{padding:14px 16px;border-bottom:0.5px solid #f0ede8}
+.exp-field:last-child{border-bottom:none}
+.exp-field label{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px;font-weight:700}
+.exp-field input{font-size:14px;color:#2d2a26;border:none;background:transparent;width:100%;outline:none;font-family:'Comfortaa',sans-serif}
+.exp-field input::placeholder{color:#c5bfb5}
+.btn-dl{width:100%;padding:16px;border-radius:16px;background:#c8794a;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;box-shadow:0 4px 14px rgba(200,121,74,0.35)}
+.btn-dl:disabled{opacity:.4}
+.status-msg{text-align:center;font-size:12px;color:#a09b93;margin-top:12px;min-height:20px}
+/* MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal-bg/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.modal{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px);max-height:90vh;overflow-y:auto}
+.m-handle{width:36px;height:4px;background:#d3d1c7;border-radius:2px;margin:0 auto 18px}
+.ai-row{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:#c8794a;animation:pulse 1.1s ease-in-out infinite}
+.ai-dot:nth-child(2){animation-delay:.18s}
+.ai-dot:nth-child(3){animation-delay:.36s}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+.m-card{background:#fff;border-radius:16px;overflow:hidden;border:0.5px solid #e8e5de;margin-bottom:12px}
+.m-field{padding:12px 16px;border-bottom:0.5px solid #f0ede8;display:flex;align-items:center;gap:8px}
+.m-field:last-child{border-bottom:none}
+.m-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;font-weight:700;flex-shrink:0}
+.m-unit-wrap{position:relative;flex:1}
+.m-input{font-size:15px;color:#2d2a26;border:none;background:transparent;width:100%;outline:none;font-family:'Comfortaa',sans-serif;font-weight:600}
+.m-input::placeholder{color:#c5bfb5}
+.m-add-btn{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:#e8e5de;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.unit-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;border:0.5px solid #e8e5de;border-top:none;box-shadow:0 8px 20px rgba(45,42,38,0.12);z-index:10;max-height:180px;overflow-y:auto}
+.unit-dropdown/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.unit-drop-item{padding:11px 16px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif}
+.unit-drop-item:last-child{border-bottom:none}
+.suggest-row{display:none;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.suggest-chip{padding:7px 12px;border-radius:20px;border:1px solid #d3d1c7;background:#fff;font-size:13px;font-family:'Comfortaa',sans-serif;color:#2d2a26;cursor:pointer;font-weight:600}
+.hint-txt{font-size:11px;color:#a09b93;margin:2px 0 10px 2px;display:none}
+.status-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.s-btn{padding:14px 10px;border-radius:14px;border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px}
+.s-done{background:#e6f3de;color:#3b6d11;box-shadow:0 3px 10px rgba(59,109,17,0.15)}
+.s-other{background:#e8e5de;color:#2d2a26;box-shadow:0 3px 10px rgba(45,42,38,0.12)}
+.confirm-unit{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;border:0.5px solid #e8e5de}
+.confirm-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px;font-weight:700}
+.confirm-val{font-size:16px;font-weight:700;color:#2d2a26}
+.confirm-input{font-size:15px;color:#2d2a26;border:none;background:transparent;width:100%;outline:none;font-family:'Comfortaa',sans-serif}
+.confirm-input::placeholder{color:#c5bfb5}
+.photo-add-btn{display:flex;gap:8px;margin-bottom:12px}
+.photo-prev{width:100%;height:130px;object-fit:cover;border-radius:14px;margin-bottom:12px;display:block}
+.m-btn-row{display:flex;gap:10px;margin-top:4px}
+.btn-cancel{flex:1;padding:16px;border-radius:14px;background:#e8e5de;color:#6b6760;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif}
+.btn-confirm{flex:2;padding:16px;border-radius:14px;background:#2d2a26;color:#f5f3ef;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;box-shadow:0 4px 12px rgba(45,42,38,0.28)}
+/* PROJECT MODAL */
+.pm-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.pm-bg/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.pm-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:28px 20px calc(env(safe-area-inset-bottom,0px)+28px);overflow-y:auto;max-height:90vh}
+.pm-title{font-size:16px;font-weight:700;color:#2d2a26;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;padding:0 15% 0 15%}
+.pm-card{background:#fff;border-radius:16px;overflow:hidden;border:0.5px solid #e8e5de;margin-bottom:18px}
+.pm-row{padding:15px 18px;border-bottom:0.5px solid #f0ede8;display:flex;flex-direction:column}
+.pm-row:last-child{border-bottom:none}
+.pm-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px;font-weight:700}
+.pm-input{font-size:14px;color:#2d2a26;border:none;background:transparent;width:100%;outline:none;font-family:'Comfortaa',sans-serif}
+.pm-input::placeholder{color:#c5bfb5}
+/* NAME PICKER */
+.name-picker{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border-radius:16px;border:0.5px solid #e8e5de;box-shadow:0 8px 24px rgba(45,42,38,0.14);z-index:50;min-width:220px;max-height:240px;overflow-y:auto;padding:6px}
+.name-picker/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.name-picker-item{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:600;color:#2d2a26;cursor:pointer;font-family:'Comfortaa',sans-serif}
+.name-picker-item:hover{background:#f5f3ef}
+.name-picker-empty{padding:14px;font-size:13px;color:#a09b93;text-align:center;font-family:'Comfortaa',sans-serif}
+/* QUICK PICK */
+.qp-bg{position:fixed;inset:0;background:rgba(20,18,16,0.45);z-index:150;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.qp-bg/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.qp-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+28px);overflow-y:auto;max-height:85vh}
+.qp-title{font-size:12px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.qp-input-row{display:flex;gap:8px;margin-bottom:10px}
+.qp-input{flex:1;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qp-input::placeholder{color:#c5bfb5}
+.qp-add{padding:11px 16px;border-radius:12px;background:#2d2a26;color:#f5f3ef;border:none;font-size:13px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer;white-space:nowrap}
+.qp-history{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.qp-chip{padding:7px 13px;border-radius:20px;background:#fff;border:0.5px solid #e8e5de;font-size:12px;font-weight:600;color:#2d2a26;cursor:pointer;font-family:'Comfortaa',sans-serif}
+.qp-queue{margin-bottom:12px}
+.qp-queue-item{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-radius:10px;margin-bottom:6px;border:0.5px solid #e8e5de;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif}
+.qp-queue-del{background:none;border:none;cursor:pointer;color:#c5bfb5;font-size:18px;line-height:1;padding:0 2px}
+.qp-footer{display:flex;gap:10px;margin-top:4px}
+.qp-cancel{flex:1;padding:13px;border-radius:12px;background:#e8e5de;color:#6b6760;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif}
+.qp-done{flex:2;padding:13px;border-radius:12px;background:#c8794a;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif}
+.qp-done:disabled{opacity:.4}
+/* TAB BAR */
+.tab-bar{display:none;flex-shrink:0;background:#fff;border-top:0.5px solid #e8e5de;padding:8px 0 calc(env(safe-area-inset-bottom,0px)+8px);position:relative;z-index:1}
+.tab-bar.visible{display:flex}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;padding:4px 0;font-family:'Comfortaa',sans-serif}
+.tab-btn svg{color:#c5bfb5}
+.tab-btn span{font-size:10px;font-weight:600;color:#c5bfb5}
+.tab-btn.active svg,.tab-btn.active span{color:#2d2a26}
+/* OVERVIEW */
+.ov-body{flex:1;overflow-y:auto;background:#f5f3ef;padding:16px 16px 0;min-height:0}
+.ov-card{background:#fff;border-radius:20px;overflow:hidden;border:0.5px solid #e8e5de;box-shadow:0 4px 16px rgba(45,42,38,0.10);margin-bottom:12px}
+.ov-photo{width:100%;max-height:260px;object-fit:cover;display:block}
+.ov-photo-empty{height:200px;display:flex;align-items:center;justify-content:center;background:#f5f3ef}
+.ov-info{padding:16px 18px 18px}
+.ov-counter{font-size:12px;font-weight:600;color:#a09b93}
+.ov-nav{display:flex;gap:10px;padding:12px 16px;flex-shrink:0}
+.ov-prev{flex:1;padding:14px;border-radius:14px;background:#e8e5de;color:#2d2a26;border:none;font-size:13px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.ov-next{flex:1;padding:14px;border-radius:14px;background:#2d2a26;color:#f5f3ef;border:none;font-size:13px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.ov-export{margin:0 16px 12px;padding:14px;border-radius:14px;background:#c8794a;color:#fff;border:none;font-size:14px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(200,121,74,0.35)}
+.ov-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#a09b93;font-size:14px;text-align:center;padding:40px}
+/* BULK MODAL */
+.bulk-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.bulk-bg/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+/* UNIT DB */
+.udb-body{flex:1;padding:0 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px)+24px)}
+.udb-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-radius:14px;margin-bottom:8px;border:0.5px solid #e8e5de}
+.udb-name{font-size:14px;font-weight:600;color:#2d2a26}
+.udb-del{background:none;border:none;cursor:pointer;color:#c5bfb5;font-size:20px;padding:0 4px}
+.udb-add-row{display:flex;gap:8px;padding:0 16px 12px;flex-shrink:0}
+.udb-input{flex:1;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.udb-input::placeholder{color:#c5bfb5}
+.udb-save{padding:11px 18px;border-radius:12px;background:#2d2a26;color:#f5f3ef;border:none;font-size:13px;font-weight:600;font-family:'Comfortaa',sans-serif;cursor:pointer}
+/* AUTOCOMPLETE */
+.ac-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;border:0.5px solid #e8e5de;border-top:none;box-shadow:0 8px 20px rgba(45,42,38,0.12);z-index:20;max-height:200px;overflow-y:auto}
+.ac-dropdown/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+.ac-item{padding:11px 16px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.ac-item:last-child{border-bottom:none}
+/* QUICK ADD MODAL */
+.qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
+.qa-bg.hidden{display:none}
+.qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
+.qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.qa-unit-input{flex:1;padding:12px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:15px;font-weight:600;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.qa-unit-input::placeholder{color:#c5bfb5}
+.qa-status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.qa-status-btn{padding:12px 6px;border-radius:14px;border:2px solid transparent;cursor:pointer;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s}
+.qa-completed{background:#e6f3de;color:#3b6d11}
+.qa-placed{background:#ddeaf7;color:#1a4d7a}
+.qa-other{background:#e8e5de;color:#2d2a26}
+.qa-status-btn.selected{border-color:#2d2a26;box-shadow:0 2px 8px rgba(45,42,38,0.18)}
+.qa-other-input{width:100%;padding:11px 14px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none;margin-bottom:14px;display:none}
+.qa-other-input::placeholder{color:#c5bfb5}
+.qa-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.qa-photo-btn{flex:1;padding:11px 8px;border-radius:12px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+.qa-photo-btn.dark{background:#2d2a26;color:#f5f3ef}
+.qa-photo-prev{width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:14px;display:none}
+.qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
+.qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
+.qa-ac-item:last-child{border-bottom:none}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- API KEY SETUP SCREEN -->
+  <div class="screen" id="s-apikey" style="align-items:center;justify-content:center;padding:32px 24px;background:#f5f3ef">
+    <div style="width:100%;max-width:400px">
+      <div style="text-align:center;margin-bottom:32px">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c8794a" stroke-width="1.5" stroke-linecap="round" style="margin-bottom:16px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        <div style="font-size:22px;font-weight:700;color:#2d2a26;margin-bottom:8px">API Key</div>
+        <div style="font-size:13px;color:#8a8680;line-height:1.6">Zadej svůj Anthropic API klíč.<br>Uloží se jen do tohoto telefonu.</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;border:0.5px solid #e8e5de;padding:16px;margin-bottom:16px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b5b0a8;margin-bottom:8px">Anthropic API Key</div>
+        <input id="apikeyInput" type="password" placeholder="sk-ant-..." style="width:100%;border:none;background:transparent;font-size:14px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none" oninput="document.getElementById('apikeyBtn').disabled=this.value.trim().length<10">
+      </div>
+      <button id="apikeyBtn" disabled onclick="saveApiKey()" style="width:100%;padding:16px;border-radius:14px;background:#c8794a;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;box-shadow:0 4px 14px rgba(200,121,74,0.35)">
+        Uložit a spustit
+      </button>
+      <div style="text-align:center;margin-top:16px">
+        <a href="https://console.anthropic.com/settings/keys" target="_blank" style="font-size:12px;color:#c8794a;text-decoration:none">Kde najdu klíč? →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="screen active" id="s-projects">
+    <div class="nav">
+      <div class="nav-title" style="text-align:left;flex:1">Projects</div>
+      <div class="nav-right" style="display:flex;gap:8px">
+        <button onclick="clearApiKey()" style="background:none;border:none;cursor:pointer;padding:6px;color:#a09b93">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        </button>
+        <button class="pill pill-dark" onclick="openProjModal(null)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New
+        </button>
+      </div>
+    </div>
+
+    <div class="proj-body" id="projBody">
+      <div class="empty-msg">No projects yet.<br><strong>Tap New</strong> to create one.</div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="screen" id="s-list">
+    <div class="nav">
+      <button class="nav-back" onclick="goProjects()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Projects
+      </button>
+      <div class="nav-title" id="listTitle">Report</div>
+      <div class="nav-right">
+        <button class="pill pill-orange" onclick="goExport()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="tb tb-dark" onclick="addOne()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add item
+      </button>
+      <button class="tb tb-grey" onclick="triggerMulti()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="14" height="14" rx="2"/><path d="M16 3h3a2 2 0 0 1 2 2v14"/></svg>
+        Multi-add
+      </button>
+      <button class="tb tb-orange" onclick="goFloorplan()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Floor plan
+      </button>
+    </div>
+    <div class="toolbar" style="padding-top:0;padding-bottom:20px">
+      <button class="tb tb-reorder" id="reorderBtn" onclick="toggleReorder()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Reorder
+      </button>
+      <button class="tb tb-grey" onclick="show('s-udb');renderUdb()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        Unit DB
+      </button>
+      <button class="tb tb-grey" onclick="toggleMultiTap()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><circle cx="12" cy="12" r="7"/></svg>
+        Add more
+      </button>
+    </div>
+    <div class="list-body" id="listBody"></div>
+    <div class="rbar" id="rbar">
+      <div class="rbar-info" id="rbarInfo">Tap to select</div>
+      <div class="rbar-btns">
+        <button class="rbar-btn rbar-ud" onclick="moveSelected(-1)">▲ Up</button>
+        <button class="rbar-btn rbar-ud" onclick="moveSelected(1)">▼ Down</button>
+        <button class="rbar-btn" style="background:#c0432b;color:#fff" onclick="deleteSelected()">Delete</button>
+        <button class="rbar-btn rbar-done" onclick="toggleReorder()">Done</button>
+      </div>
+    </div>
+    <div class="tab-bar visible" id="listTabBar">
+      <button class="tab-btn active" onclick="switchTab('list')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>List</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('overview')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Overview</span>
+      </button>
+    </div>
+    <input type="file" id="multiFile" accept="image/*" multiple class="hidden" onchange="handleMulti(event)">
+  </div>
+
+  <!-- FLOOR PLAN -->
+  <div class="screen" id="s-floorplan">
+    <div class="nav">
+      <button class="nav-back" onclick="goList()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="nav-title">Floor plan</div>
+      <div class="nav-right">
+        <button class="nav-back" onclick="triggerFpUpload()" style="color:#c8794a;font-size:12px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Change
+        </button>
+      </div>
+    </div>
+    <div class="fp-body" id="fpBody">
+      <div class="fp-empty-wrap" id="fpEmpty">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#8a8680" stroke-width="1.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <p>Upload your floor plan.<br>Tap a unit to add it to the report.</p>
+        <button class="pill pill-dark" style="padding:13px 20px;font-size:13px" onclick="triggerFpUpload()">Upload floor plan</button>
+      </div>
+      <div class="fp-scroll hidden" id="fpScroll">
+        <div class="fp-inner" id="fpInner">
+          <img id="fpImg" alt="Floor plan">
+        </div>
+      </div>
+      <div class="fp-hint hidden" id="fpHint">Tap a unit to add it to the report</div>
+      <button class="fp-addmore hidden" id="fpAddMore" onclick="toggleMultiTap()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add more units
+      </button>
+    </div>
+    <input type="file" id="fpFile" accept="image/*" class="hidden" onchange="handleFpUpload(event)">
+  </div>
+
+  <!-- DETAIL -->
+  <div class="screen" id="s-detail">
+    <div class="nav">
+      <button class="nav-back" onclick="goList()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="nav-title" id="detTitle">Item</div>
+      <div style="min-width:64px"></div>
+    </div>
+    <div class="det-body">
+      <div class="photo-card" id="photoCard"></div>
+      <div class="fields-card">
+        <div class="frow" style="position:relative">
+          <div class="flbl">Title</div>
+          <input class="finput" id="dTitle" placeholder="e.g. RB5-DN / RBE-D" oninput="onTitleInput(this.value)" onblur="onTitleBlur(this.value)" autocomplete="off">
+          <div class="ac-dropdown hidden" id="acDropdown"></div>
+        </div>
+        <div class="frow">
+          <div class="flbl">Comments</div>
+          <input class="finput" id="dComments" placeholder="e.g. completed" oninput="saveField('comments',this.value)">
+        </div>
+      </div>
+      <button class="btn-del" onclick="deleteItem()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Delete item
+      </button>
+    </div>
+    <input type="file" id="singleFile" accept="image/*" class="hidden" onchange="handleSingle(event)">
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="screen" id="s-overview">
+    <div class="nav">
+      <div style="min-width:64px"></div>
+      <div class="nav-title">Overview</div>
+      <div style="min-width:64px"></div>
+    </div>
+    <div class="ov-body" id="ovBody"></div>
+    <div class="ov-nav" id="ovNav" style="display:none">
+      <button class="ov-prev" onclick="ovMove(-1)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Prev
+      </button>
+      <button class="ov-next" onclick="ovMove(1)">
+        Next
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <button class="ov-export hidden" id="ovExportBtn" onclick="goExport()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export PDF
+    </button>
+    <div class="tab-bar visible" id="ovTabBar">
+      <button class="tab-btn" onclick="switchTab('list')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>List</span>
+      </button>
+      <button class="tab-btn active" onclick="switchTab('overview')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Overview</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- UNIT DATABASE -->
+  <div class="screen" id="s-udb">
+    <div class="nav">
+      <button class="nav-back" onclick="goList()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="nav-title">Unit database</div>
+      <div style="min-width:64px"></div>
+    </div>
+    <div class="udb-add-row">
+      <input class="udb-input" id="udbInput" placeholder="Add new unit name…">
+      <button class="udb-save" onclick="udbAdd()">Add</button>
+    </div>
+    <div class="udb-body" id="udbBody"></div>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="screen" id="s-export">
+    <div class="nav">
+      <button class="nav-back" onclick="goList()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="nav-title">Export</div>
+      <div style="min-width:64px"></div>
+    </div>
+    <div class="exp-body">
+      <div class="sec-lbl">Report info</div>
+      <div class="exp-card">
+        <div class="exp-field"><label>Report title</label><input type="text" id="rTitle" placeholder="e.g. CFE – Marseille Phase 13"></div>
+        <div class="exp-field"><label>Client</label><input type="text" id="rClient" placeholder="e.g. Primark"></div>
+        <div class="exp-field"><label>Date</label><input type="date" id="rDate"></div>
+        <div class="exp-field"><label>Prepared by</label><input type="text" id="rPrepBy" placeholder="Your name"></div>
+      </div>
+      <button class="btn-dl" id="exportBtn" onclick="generatePDF('download')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+      <button class="btn-dl" id="shareBtn" onclick="generatePDF('share')" style="background:#2d2a26;box-shadow:0 4px 14px rgba(45,42,38,0.28);margin-top:10px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share PDF
+      </button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+  </div>
+
+<!-- QUICK ADD MODAL -->
+<div class="qa-bg hidden" id="qaBg" onclick="if(event.target===this)closeQa()">
+  <div class="qa-box">
+    <div class="m-handle"></div>
+    <div class="qa-title">New item</div>
+    <div class="qa-unit-row">
+      <input class="qa-unit-input" id="qaUnit" placeholder="Unit name…" autocomplete="off" oninput="onQaUnitInput(this.value)">
+    </div>
+    <div class="qa-ac" id="qaAc"></div>
+    <div class="qa-status-row">
+      <button class="qa-status-btn qa-completed" id="qaBtnCompleted" onclick="qaPickStatus('completed')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Completed
+      </button>
+      <button class="qa-status-btn qa-placed" id="qaBtnPlaced" onclick="qaPickStatus('placed')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Placed
+      </button>
+      <button class="qa-status-btn qa-other" id="qaBtnOther" onclick="qaPickStatus('other')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Other
+      </button>
+    </div>
+    <input class="qa-other-input" id="qaOtherInput" placeholder="Describe the status…">
+    <div class="qa-photo-row">
+      <button class="qa-photo-btn dark" onclick="triggerQaCamera()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Take photo
+      </button>
+      <button class="qa-photo-btn" onclick="triggerQaGallery()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Gallery
+      </button>
+    </div>
+    <img class="qa-photo-prev" id="qaPhotoPrev" alt="">
+    <div class="m-btn-row">
+      <button class="btn-cancel" onclick="closeQa()">Cancel</button>
+      <button class="btn-confirm" id="qaConfirmBtn" onclick="confirmQa()" disabled>Add</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="qaCameraFile" accept="image/*" capture="environment" class="hidden" onchange="handleQaPhoto(event)">
+<input type="file" id="qaGalleryFile" accept="image/*" class="hidden" onchange="handleQaPhoto(event)">
+
+</div><!-- .app -->
+
+<!-- AI MODAL -->
+<div class="modal-bg hidden" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div id="stepLoad">
+      <div class="ai-row">
+        <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+        <span style="font-size:13px;color:#8a8680">Reading unit label…</span>
+      </div>
+    </div>
+    <div id="stepStatus" class="hidden">
+      <div class="m-card">
+        <div class="m-field">
+          <span class="m-lbl">Unit</span>
+          <div class="m-unit-wrap">
+          <input class="m-input" id="mUnit" placeholder="Unit name" oninput="onUnitInput(this.value)" autocomplete="off">
+          <div class="unit-dropdown hidden" id="unitDropdown"></div>
+        </div>
+          <button class="m-add-btn" onclick="addPart()" title="Add another part">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d2a26" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="suggest-row" id="suggestRow"></div>
+      <div class="hint-txt" id="hintTxt">Tap + to select another part on the floor plan</div>
+      <div class="status-choice">
+        <button class="s-btn s-done" onclick="pickDone()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Completed
+        </button>
+        <button class="s-btn s-other" onclick="pickOther()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Other
+        </button>
+      </div>
+      <div class="m-btn-row">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+    <div id="stepConfirm" class="hidden">
+      <div class="confirm-unit" style="margin-bottom:12px">
+        <div class="confirm-lbl">Unit</div>
+        <div class="confirm-val" id="confirmUnit"></div>
+      </div>
+      <div class="confirm-unit" style="margin-bottom:12px">
+        <div class="confirm-lbl">Comment</div>
+        <input class="confirm-input" id="confirmComment" placeholder="Write status…">
+      </div>
+      <div id="photoAddBtn" style="display:flex;gap:8px;margin-bottom:12px">
+        <button onclick="triggerCamera()" style="flex:1;padding:12px 8px;border-radius:14px;background:#2d2a26;color:#f5f3ef;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 10px rgba(45,42,38,0.25)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take photo
+        </button>
+        <button onclick="triggerModalPhoto()" style="flex:1;padding:12px 8px;border-radius:14px;background:#e8e5de;color:#2d2a26;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 8px rgba(45,42,38,0.10)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          From gallery
+        </button>
+      </div>
+      <img id="modalPhotoPrev" class="photo-prev hidden" alt="">
+      <div class="m-btn-row">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" onclick="confirmAdd()">Add to report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BULK STATUS MODAL -->
+<div class="modal-bg hidden" id="bulkModalBg" onclick="if(event.target===this)closeBulkModal()">
+  <div class="modal">
+    <div class="m-handle"></div>
+    <div style="font-size:15px;font-weight:700;color:#2d2a26;margin-bottom:4px" id="bulkTitle">Set status</div>
+    <div style="font-size:12px;color:#a09b93;margin-bottom:16px" id="bulkSub">Choose status for all selected units</div>
+    <div class="status-choice">
+      <button class="s-btn s-done" onclick="bulkPickDone()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Completed
+      </button>
+      <button class="s-btn s-other" onclick="bulkPickOther()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Other
+      </button>
+    </div>
+    <div id="bulkOtherWrap" class="hidden" style="margin-bottom:12px">
+      <input id="bulkComment" class="confirm-input" style="background:#fff;border:0.5px solid #e8e5de;border-radius:12px;padding:12px 16px;width:100%" placeholder="Describe the status…">
+    </div>
+    <div class="m-btn-row">
+      <button class="btn-cancel" onclick="closeBulkModal()">Cancel</button>
+      <button class="btn-confirm" id="bulkConfirmBtn" onclick="confirmBulk()" style="display:none">Add to report</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK-PICK MODAL (multi-tap without AI) -->
+<div class="qp-bg hidden" id="qpBg" onclick="if(event.target===this)closeQp()">
+  <div class="qp-box">
+    <div class="m-handle"></div>
+    <div class="qp-title">Add units</div>
+    <div class="qp-input-row">
+      <input class="qp-input" id="qpInput" placeholder="Type unit name…" oninput="onQpInput(this.value)" autocomplete="off">
+      <button class="qp-add" onclick="qpAddCurrent()">Add</button>
+    </div>
+    <div class="qp-history" id="qpHistory"></div>
+    <div class="qp-queue" id="qpQueue"></div>
+    <div class="qp-footer">
+      <button class="qp-cancel" onclick="closeQp()">Cancel</button>
+      <button class="qp-done" id="qpDoneBtn" onclick="qpDone()" disabled>
+        Set status →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="pm-bg hidden" id="pmBg" onclick="if(event.target===this)closeProjModal()">
+  <div class="pm-box">
+    <div class="m-handle"></div>
+    <div class="pm-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span id="pmTitle">New project</span>
+      <div style="position:relative">
+        <button onclick="toggleNamePicker()" style="padding:7px 11px;border-radius:10px;background:#e8e5de;border:none;font-size:11px;font-weight:600;color:#6b6760;font-family:'Comfortaa',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <div class="name-picker hidden" id="namePicker"></div>
+      </div>
+    </div>
+    <div class="pm-card">
+      <div class="pm-row">
+        <div class="pm-lbl">Project name</div>
+        <input class="pm-input" id="pmName" placeholder="e.g. CFE – Marseille" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();saveProj();}">
+      </div>
+      <div class="pm-row"><div class="pm-lbl">Phase</div><input class="pm-input" id="pmPhase" placeholder="e.g. Phase 13" onkeydown="if(event.key==='Enter'){event.preventDefault();saveProj();}"></div>
+      <div class="pm-row"><div class="pm-lbl">Location / Store</div><input class="pm-input" id="pmLocation" placeholder="e.g. Primark Marseille" onkeydown="if(event.key==='Enter'){event.preventDefault();saveProj();}"></div>
+    </div>
+    <div class="m-btn-row" style="padding:0 4px;margin-top:4px;justify-content:center;gap:12px">
+      <button class="btn-cancel" style="flex:none;width:38%" onclick="closeProjModal()">Cancel</button>
+      <button class="btn-confirm" style="flex:none;width:38%" onclick="saveProj()">Save</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="modalPhotoFile" accept="image/*" class="hidden" onchange="handleModalPhoto(event)">
+<input type="file" id="cameraFile" accept="image/*" capture="environment" class="hidden" onchange="handleModalPhoto(event)">
+<input type="file" id="singleCameraFile" accept="image/*" capture="environment" class="hidden" onchange="handleSingle(event)">
+
+<script>
+// ── API KEY ──────────────────────────────────────
+// API key loaded from localStorage
+function getApiKey() { return localStorage.getItem('anthropic_api_key') || ''; }
+// ─────────────────────────────────────────────────
+
+// ── STATE ────────────────────────────────────────
+let projects = [], projUid = 0, curProjId = null, editProjId = null;
+let items = [], itemUid = 0, curItemId = null;
+let fpData = null;
+let tapX = 0, tapY = 0;
+let mUnit = '', mStatus = 'done', mPhoto = null;
+let addingPart = false, lockedColour = null;
+let reorderMode = false, selectedIds = new Set();
+let unitHistory = []; // remembered unit names
+let globalUnitDb = []; // shared unit database across all projects
+let multiTapMode = false, multiTapQueue = []; // {tapX,tapY,label} pending bulk add
+
+// ── PERSISTENCE (localStorage) ──────────────────
+const LS_KEY = 'fieldReportData_v3';
+
+
+// Compress image to max 800px, jpeg 60% – reduces from ~3MB to ~100KB
+function compressPhoto(dataUrl, cb) {
+  if (!dataUrl) { cb(null); return; }
+  const img = new Image();
+  img.onload = () => {
+    const MAX = 800;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+      else       { w = Math.round(w * MAX / h); h = MAX; }
+    }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    cb(c.toDataURL('image/jpeg', 0.60));
+  };
+  img.onerror = () => cb(dataUrl);
+  img.src = dataUrl;
+}
+
+function compressAndSave() {
+  // Collect all photos that need compression
+  const tasks = [];
+  projects.forEach(p => {
+    (p.items || []).forEach(it => {
+      if (it.url && !it._compressed) tasks.push({ it, projId: p.id });
+    });
+  });
+
+  let done = 0;
+  if (!tasks.length) { saveAll(); return; }
+
+  tasks.forEach(({ it }) => {
+    compressPhoto(it.url, compressed => {
+      if (compressed) { it.url = compressed; it._compressed = true; }
+      done++;
+      if (done === tasks.length) saveAll();
+    });
+  });
+}
+
+function saveAll() {
+  try {
+    // Save metadata without photos first (always succeeds)
+    const meta = {
+      projects: projects.map(p => ({
+        id: p.id, name: p.name, phase: p.phase, location: p.location,
+        itemUid: p.itemUid || 0,
+        unitHistory: p.unitHistory || [],
+        unitDb: p.unitDb || [],
+        items: (p.items || []).map(it => ({
+          id: it.id, title: it.title, comments: it.comments,
+          status: it.status, statusLabel: it.statusLabel,
+          tapX: it.tapX, tapY: it.tapY,
+          _compressed: it._compressed || false,
+          hasPhoto: !!it.url
+        }))
+      })),
+      projUid,
+      globalUnitDb
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(meta));
+
+    // Save each photo separately with its own key
+    projects.forEach(p => {
+      (p.items || []).forEach(it => {
+        if (it.url) {
+          try {
+            localStorage.setItem('photo_' + p.id + '_' + it.id, it.url);
+          } catch(e) {
+            // Photo not saved due to quota – others remain safe
+          }
+        }
+      });
+    });
+  } catch(e) { console.warn('Save failed:', e); }
+}
+
+function saveAllWithPhotos() { compressAndSave(); }
+
+function loadAll() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.projects) {
+      projects = data.projects;
+      projects.forEach(p => {
+        if (!p.items) p.items = [];
+        if (!p.unitHistory) p.unitHistory = [];
+        if (!p.unitDb) p.unitDb = [];
+      });
+    }
+    if (data.projUid) projUid = data.projUid;
+    if (data.globalUnitDb) globalUnitDb = data.globalUnitDb;
+
+    // Photos are stored inline in items
+  } catch(e) { console.warn('Load failed:', e); }
+}
+
+// ── INIT ─────────────────────────────────────────
+loadAll();
+document.getElementById('rDate').value = new Date().toISOString().split('T')[0];
+
+function saveApiKey() {
+  const key = document.getElementById('apikeyInput').value.trim();
+  if (!key) return;
+  localStorage.setItem('anthropic_api_key', key);
+  show('s-projects');
+  renderProjects();
+}
+
+function checkApiKey() {
+  const key = localStorage.getItem('anthropic_api_key');
+  if (!key) {
+    show('s-apikey');
+  } else {
+    show('s-projects');
+    renderProjects();
+  }
+}
+
+function clearApiKey() {
+  if (!confirm('Reset API key?')) return;
+  localStorage.removeItem('anthropic_api_key');
+  show('s-apikey');
+}
+
+checkApiKey();
+
+// ── NAVIGATION ───────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goProjects() {
+  saveCurProj();
+  reorderMode = false;
+  selectedIds.clear();
+  show('s-projects');
+  renderProjects();
+}
+function goList()      { show('s-list'); renderList(); }
+function goExport()    { show('s-export'); }
+function goFloorplan() { show('s-floorplan'); }
+
+// ── PROJECTS ─────────────────────────────────────
+function renderProjects() {
+  const body = document.getElementById('projBody');
+  body.innerHTML = '';
+  if (!projects.length) {
+    body.innerHTML = '<div class="empty-msg">No projects yet.<br><strong>Tap New</strong> to create one.</div>';
+    return;
+  }
+  const sorted = [...projects].reverse();
+  sorted.forEach(p => {
+    const wrap = document.createElement('div');
+    wrap.className = 'proj-wrap';
+
+    // swipe actions (hidden behind card)
+    const actions = document.createElement('div');
+    actions.className = 'proj-actions';
+    actions.innerHTML =
+      '<button class="proj-act-edit" onclick="openProjModal(' + p.id + ')">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+        'Edit</button>' +
+      '<button class="proj-act-del" onclick="deleteProject(' + p.id + ')">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+        'Delete</button>';
+    wrap.appendChild(actions);
+
+    const c = document.createElement('div');
+    c.className = 'proj-card';
+    const meta = [p.phase, p.location].filter(Boolean).join(' · ');
+    const n = p.items ? p.items.length : 0;
+    c.innerHTML =
+      '<div class="proj-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a8680" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>' +
+      '<div class="proj-info"><div class="proj-name">' + (esc(p.name) || 'Untitled') + '</div>' +
+      (meta ? '<div class="proj-meta">' + esc(meta) + '</div>' : '') + '</div>' +
+      '<span class="proj-count">' + n + ' item' + (n !== 1 ? 's' : '') + '</span>' +
+      '<svg style="margin-left:4px;flex-shrink:0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+    c.onclick = () => openProj(p.id);
+
+    // swipe left to reveal actions
+    let startX = 0, swiped = false;
+    c.addEventListener('touchstart', e => { startX = e.touches[0].clientX; swiped = false; }, {passive:true});
+    c.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - startX;
+      if (dx < -10) { swiped = true; c.style.transform = 'translateX(' + Math.max(-120, dx) + 'px)'; }
+      else if (dx > 5 && swiped) { c.style.transform = 'translateX(0)'; swiped = false; }
+    }, {passive:true});
+    c.addEventListener('touchend', () => {
+      if (swiped) { c.style.transform = 'translateX(-120px)'; }
+      else { c.style.transform = 'translateX(0)'; }
+    });
+
+    wrap.appendChild(c);
+    body.appendChild(wrap);
+  });
+}
+
+function deleteProject(id) {
+  if (!confirm('Delete this project? This cannot be undone.')) return;
+  projects = projects.filter(p => p.id !== id);
+  saveAllWithPhotos();
+  renderProjects();
+}
+
+function openProjModal(id) {
+  editProjId = id;
+  const p = id != null ? projects.find(x => x.id === id) : null;
+  document.getElementById('pmTitle').textContent = p ? 'Edit project' : 'New project';
+  document.getElementById('pmName').value     = p ? p.name     : '';
+  document.getElementById('pmPhase').value    = p ? p.phase    : '';
+  document.getElementById('pmLocation').value = p ? p.location : '';
+  closeProjDropdown();
+  document.getElementById('pmBg').classList.remove('hidden');
+  setTimeout(() => {
+    document.getElementById('pmName').focus();
+    // show all existing names as suggestions when field is empty
+  }, 150);
+}
+function closeProjModal() {
+  document.getElementById('pmBg').classList.add('hidden');
+  closeProjDropdown();
+  editProjId = null;
+}
+function onProjNameInput(val) {
+  const dd = document.getElementById('projDropdown');
+  const matches = projects
+    .filter(p => p.name && (!val || p.name.toLowerCase().includes(val.toLowerCase())))
+    .map(p => p.name)
+    .filter((n, i, a) => a.indexOf(n) === i) // unique
+    .slice(0, 6);
+  if (!matches.length || (matches.length === 1 && matches[0] === val)) {
+    dd.classList.add('hidden'); return;
+  }
+  dd.innerHTML = '';
+  matches.forEach(name => {
+    const d = document.createElement('div');
+    d.className = 'proj-drop-item';
+    // find matching project for meta info
+    const proj = projects.find(p => p.name === name);
+    const meta = proj ? [proj.phase, proj.location].filter(Boolean).join(' · ') : '';
+    d.innerHTML = name + (meta ? '<span>' + meta + '</span>' : '');
+    d.onclick = () => {
+      document.getElementById('pmName').value = name;
+      // also prefill phase and location from that project
+      if (proj) {
+        document.getElementById('pmPhase').value    = proj.phase    || '';
+        document.getElementById('pmLocation').value = proj.location || '';
+      }
+      closeProjDropdown();
+    };
+    dd.appendChild(d);
+  });
+  dd.classList.remove('hidden');
+}
+function closeProjDropdown() {
+  const dd = document.getElementById('projDropdown');
+  if (dd) dd.classList.add('hidden');
+}
+let _savingProj = false;
+function saveProj() {
+  if (_savingProj) return;
+  _savingProj = true;
+  setTimeout(() => { _savingProj = false; }, 500);
+  const name     = document.getElementById('pmName').value.trim();
+  const phase    = document.getElementById('pmPhase').value.trim();
+  const location = document.getElementById('pmLocation').value.trim();
+  if (!name) { document.getElementById('pmName').focus(); _savingProj = false; return; }
+  if (editProjId != null) {
+    const p = projects.find(x => x.id === editProjId);
+    if (p) { p.name = name; p.phase = phase; p.location = location; }
+  } else {
+    projects.push({ id: ++projUid, name, phase, location, items: [], fpData: null, itemUid: 0 });
+  }
+  closeProjModal();
+  renderProjects();
+  saveAllWithPhotos();
+}
+
+function openProj(id) {
+  curProjId = id;
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  items   = p.items;
+  itemUid = p.itemUid || 0;
+  fpData  = p.fpData  || null;
+  document.getElementById('rTitle').value  = p.name + (p.phase ? ' – ' + p.phase : '');
+  document.getElementById('rClient').value = p.location || '';
+  document.getElementById('listTitle').textContent = p.name + (p.phase ? ' · ' + p.phase : '');
+  show('s-list');
+  renderList();
+  // restore floor plan
+  if (fpData) {
+    document.getElementById('fpEmpty').classList.add('hidden');
+    document.getElementById('fpScroll').classList.remove('hidden');
+    document.getElementById('fpHint').classList.remove('hidden');
+    document.getElementById('fpAddMore').classList.remove('hidden');
+    const img = document.getElementById('fpImg');
+    img.src = fpData;
+    img.onload = () => {
+      document.getElementById('fpInner').style.width  = img.naturalWidth  + 'px';
+      document.getElementById('fpInner').style.height = img.naturalHeight + 'px';
+      renderDots();
+    };
+    setupTap();
+  } else {
+    document.getElementById('fpEmpty').classList.remove('hidden');
+    document.getElementById('fpScroll').classList.add('hidden');
+    document.getElementById('fpHint').classList.add('hidden');
+  }
+}
+
+function saveCurProj() {
+  if (curProjId == null) return;
+  const p = projects.find(x => x.id === curProjId);
+  if (!p) return;
+  p.items   = items;
+  p.fpData  = fpData;
+  p.itemUid = itemUid;
+}
+
+// ── ITEMS LIST ───────────────────────────────────
+function mkItem(o = {}) { return { id: ++itemUid, title: '', comments: '', status: '', statusLabel: '', url: null, tapX: null, tapY: null, ...o }; }
+function addOne()      { openQa(); }
+function triggerMulti(){ document.getElementById('multiFile').value = ''; document.getElementById('multiFile').click(); }
+function handleMulti(e) {
+  const files = [...e.target.files]; if (!files.length) return;
+  let done = 0;
+  files.forEach(f => {
+    const it = mkItem(); items.push(it);
+    const r = new FileReader();
+    r.onload = ev => { it.url = ev.target.result; done++; if (done === files.length) goList(); };
+    r.readAsDataURL(f);
+  });
+  renderList();
+}
+
+function renderList() {
+  const body = document.getElementById('listBody');
+  body.innerHTML = '';
+  document.getElementById('reorderBtn').classList.toggle('on', reorderMode);
+  document.getElementById('rbar').classList.toggle('on', reorderMode);
+  body.classList.toggle('reorder-mode', reorderMode);
+  if (!items.length) {
+    body.innerHTML = '<div class="empty-msg"><strong>No items yet.</strong><br>Add manually or tap a unit on the floor plan.</div>';
+    return;
+  }
+  // drag state
+  let dragId = null, dragEl = null, placeholder = null;
+
+  items.forEach(it => {
+    const d = document.createElement('div');
+    d.className = 'list-item' + (selectedIds.has(it.id) ? ' selected' : '');
+    d.dataset.id = it.id;
+    d.onclick = reorderMode ? () => toggleSel(it.id) : () => openDetail(it.id);
+    const thumb = it.url
+      ? `<img class="list-thumb" src="${it.url}" alt="">`
+      : `<div class="list-thumb-empty"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b5b0a8" stroke-width="1.8" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    const badge = it.status === 'done'
+      ? `<span class="badge badge-done">Completed</span>`
+      : it.status === 'placed'
+      ? `<span class="badge badge-placed">Placed</span>`
+      : it.status === 'other'
+      ? `<span class="badge badge-other">${esc(it.statusLabel || 'Other')}</span>` : '';
+    const chkInner = selectedIds.has(it.id)
+      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f5f3ef" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>` : '';
+    const chk = `<div class="chk">${chkInner}</div>`;
+    const handle = reorderMode ? `<div class="drag-handle" style="padding:0 10px 0 0;color:#c5bfb5;cursor:grab;touch-action:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></div>` : '';
+    const arr = reorderMode ? '' : `<svg style="margin-left:6px;flex-shrink:0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+    d.innerHTML = `${chk}${handle}${thumb}<div class="list-info"><div class="list-label">${esc(it.title) || 'Untitled'}</div><div class="list-sub">${esc(it.comments) || 'No description'}</div></div>${badge}${arr}`;
+    body.appendChild(d);
+
+    if (reorderMode) {
+      const handle = d.querySelector('.drag-handle');
+      if (!handle) return;
+      let startY = 0;
+
+      handle.addEventListener('touchstart', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dragId = it.id;
+        startY = e.touches[0].clientY;
+        d.style.opacity = '0.6';
+        d.style.background = '#f0ede8';
+      }, { passive: false });
+
+      handle.addEventListener('touchmove', e => {
+        if (dragId !== it.id) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const y = e.touches[0].clientY;
+        const listBody = document.getElementById('listBody');
+        const els = [...listBody.querySelectorAll('.list-item')];
+        els.forEach(el => el.style.borderTop = '');
+        for (const el of els) {
+          if (parseInt(el.dataset.id) === dragId) continue;
+          const r = el.getBoundingClientRect();
+          const mid = r.top + r.height / 2;
+          if (y < mid) { el.style.borderTop = '2px solid #c8794a'; break; }
+        }
+      }, { passive: false });
+
+      handle.addEventListener('touchend', e => {
+        if (dragId !== it.id) return;
+        e.preventDefault();
+        const y = e.changedTouches[0].clientY;
+        const listBody = document.getElementById('listBody');
+        const els = [...listBody.querySelectorAll('.list-item')];
+        els.forEach(el => el.style.borderTop = '');
+        let toId = null;
+        for (const el of els) {
+          if (parseInt(el.dataset.id) === dragId) continue;
+          const r = el.getBoundingClientRect();
+          const mid = r.top + r.height / 2;
+          if (y < mid) { toId = parseInt(el.dataset.id); break; }
+        }
+        // if dragged past all, move to end
+        if (toId === null) {
+          const last = els[els.length - 1];
+          if (last && parseInt(last.dataset.id) !== dragId) {
+            const fromIdx = items.findIndex(x => x.id === dragId);
+            if (fromIdx !== -1) {
+              const [moved] = items.splice(fromIdx, 1);
+              items.push(moved);
+            }
+          }
+        } else {
+          const fromIdx = items.findIndex(x => x.id === dragId);
+          const toIdx   = items.findIndex(x => x.id === toId);
+          if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+            const [moved] = items.splice(fromIdx, 1);
+            const newTo = items.findIndex(x => x.id === toId);
+            items.splice(newTo, 0, moved);
+          }
+        }
+        dragId = null;
+        renderList();
+        saveAll();
+      }, { passive: false });
+    }
+  });
+}
+
+// ── REORDER ──────────────────────────────────────
+function toggleReorder() {
+  reorderMode = !reorderMode;
+  selectedIds.clear();
+  updateRbar();
+  renderList();
+}
+function toggleSel(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+  updateRbar();
+  renderList();
+}
+function deleteSelected() {
+  if (!selectedIds.size) return;
+  const n = selectedIds.size;
+  if (!confirm('Delete ' + n + ' item' + (n > 1 ? 's' : '') + '?')) return;
+  items = items.filter(x => !selectedIds.has(x.id));
+  selectedIds.clear();
+  updateRbar(); renderList(); saveCurProj(); saveAll();
+}
+function updateRbar() {
+  const n = selectedIds.size;
+  document.getElementById('rbarInfo').textContent = n === 0 ? 'Tap to select' : n === 1 ? '1 selected' : `${n} selected`;
+}
+function moveSelected(dir) {
+  if (!selectedIds.size) return;
+  const idxs = items.map((it, i) => ({ it, i })).filter(({ it }) => selectedIds.has(it.id)).map(({ i }) => i);
+  (dir === -1 ? idxs.sort((a, b) => a - b) : idxs.sort((a, b) => b - a));
+  for (const idx of idxs) {
+    const ni = idx + dir;
+    if (ni < 0 || ni >= items.length) break;
+    if (selectedIds.has(items[ni].id)) continue;
+    [items[idx], items[ni]] = [items[ni], items[idx]];
+  }
+  renderList();
+}
+
+// ── DETAIL ───────────────────────────────────────
+function openDetail(id) {
+  curItemId = id;
+  const it = items.find(x => x.id === id);
+  if (!it) return;
+  document.getElementById('detTitle').textContent  = it.title || 'Item';
+  document.getElementById('dTitle').value          = it.title    || '';
+  document.getElementById('dComments').value       = it.comments || '';
+  renderPhotoCard(it);
+  show('s-detail');
+}
+function renderPhotoCard(it) {
+  const card = document.getElementById('photoCard');
+  if (it.url) {
+    card.innerHTML = `
+      <div style="position:relative;cursor:pointer" onclick="triggerSingle()">
+        <img src="${it.url}" alt="" style="width:100%;max-height:280px;object-fit:cover;display:block">
+        <div style="position:absolute;top:10px;right:10px;background:rgba(45,42,38,.65);border-radius:10px;padding:6px 11px;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f5f3ef" stroke-width="2.2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span style="font-size:12px;font-weight:600;color:#f5f3ef;font-family:'Comfortaa',sans-serif">Replace</span>
+        </div>
+      </div>
+      <div class="photo-fab-row">
+        <button class="fab fab-grey" onclick="triggerSingleCamera()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Camera
+        </button>
+        <button class="fab fab-grey" onclick="triggerSingle()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Gallery
+        </button>
+        <button class="fab fab-red" onclick="removePhoto()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Remove
+        </button>
+      </div>`;
+  } else {
+    card.innerHTML = `<div class="photo-empty-box" onclick="triggerSingle()">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span>Tap to add photo</span>
+    </div>`;
+  }
+}
+function saveField(k, v) {
+  const it = items.find(x => x.id === curItemId); if (!it) return;
+  it[k] = v;
+  if (k === 'title') {
+    document.getElementById('detTitle').textContent = v || 'Item';
+    // DB save happens onblur, not here
+  }
+  saveCurProj(); saveAll();
+}
+function onTitleBlur(v) {
+  // Save to DB only when user finishes typing (leaves the field)
+  const it = items.find(x => x.id === curItemId); if (!it) return;
+  const name = v.trim();
+  if (name && name.length > 1) { addToUdb(name); saveUnitToHistory(name); }
+}
+function triggerSingle() { const el = document.getElementById('singleFile'); el.value = ''; el.click(); }
+function triggerSingleCamera() { const el = document.getElementById('singleCameraFile'); el.value = ''; el.click(); }
+function triggerCamera() { const el = document.getElementById('cameraFile'); el.value = ''; el.click(); }
+function handleSingle(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const it = items.find(x => x.id === curItemId);
+    if (it) {
+      compressPhoto(ev.target.result, compressed => {
+        it.url = compressed || ev.target.result;
+        it._compressed = true;
+        renderPhotoCard(it);
+        saveCurProj();
+        saveAll();
+      });
+    }
+  };
+  r.readAsDataURL(f);
+}
+function removePhoto()  { const it = items.find(x => x.id === curItemId); if (it) { it.url = null; renderPhotoCard(it); } }
+function deleteItem()   { items = items.filter(x => x.id !== curItemId); saveCurProj(); saveAllWithPhotos(); goList(); }
+
+// ── FLOOR PLAN ───────────────────────────────────
+function triggerFpUpload() { document.getElementById('fpFile').value = ''; document.getElementById('fpFile').click(); }
+function handleFpUpload(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    fpData = ev.target.result;
+    document.getElementById('fpEmpty').classList.add('hidden');
+    document.getElementById('fpScroll').classList.remove('hidden');
+    document.getElementById('fpHint').classList.remove('hidden');
+    document.getElementById('fpAddMore').classList.remove('hidden');
+    const img = document.getElementById('fpImg');
+    img.src = fpData;
+    img.onload = () => {
+      document.getElementById('fpInner').style.width  = img.naturalWidth  + 'px';
+      document.getElementById('fpInner').style.height = img.naturalHeight + 'px';
+      renderDots();
+    };
+    setupTap();
+  };
+  r.readAsDataURL(f);
+}
+function setupTap() {
+  const inner = document.getElementById('fpInner');
+  const scroll = document.getElementById('fpScroll');
+  let fpScale = 1;
+  let pinchDist0 = null;
+  let pinchScale0 = 1;
+  let lastTap = 0;
+
+  // Pinch zoom – unlimited
+  scroll.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      pinchDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchScale0 = fpScale;
+    }
+  }, { passive: false });
+
+  scroll.addEventListener('touchmove', e => {
+    if (e.touches.length !== 2 || pinchDist0 === null) return;
+    e.preventDefault();
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    fpScale = Math.max(0.3, pinchScale0 * (dist / pinchDist0));
+    inner.style.transform = 'scale(' + fpScale + ')';
+    inner.style.transformOrigin = 'top left';
+  }, { passive: false });
+
+  scroll.addEventListener('touchend', e => {
+    if (e.touches.length < 2) pinchDist0 = null;
+  }, { passive: true });
+
+  // Double tap to reset zoom
+  scroll.addEventListener('touchend', e => {
+    if (e.touches.length > 0) return;
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      fpScale = 1;
+      inner.style.transform = 'scale(1)';
+    }
+    lastTap = now;
+  }, { passive: true });
+
+  inner.onclick = function(e) {
+    if (e.target.classList.contains('fp-dot')) return;
+    const img = document.getElementById('fpImg');
+    const rect = inner.getBoundingClientRect();
+    // Account for current scale
+    tapX = (e.clientX - rect.left) / fpScale * (img.naturalWidth  / img.clientWidth);
+    tapY = (e.clientY - rect.top)  / fpScale * (img.naturalHeight / img.clientHeight);
+    if (addingPart) {
+      document.getElementById('modalBg').classList.remove('hidden');
+      showStep('stepLoad');
+      cropAndAnalyse(tapX, tapY, true);
+    } else {
+      openAIModal();
+    }
+  };
+}
+function renderDots() {
+  const inner = document.getElementById('fpInner');
+  inner.querySelectorAll('.fp-dot').forEach(d => d.remove());
+  const img = document.getElementById('fpImg');
+  if (!img.clientWidth) return;
+  const sx = img.clientWidth  / img.naturalWidth;
+  const sy = img.clientHeight / img.naturalHeight;
+  items.filter(it => it.tapX != null).forEach(it => {
+    const dot = document.createElement('div');
+    dot.className = 'fp-dot ' + (it.status === 'done' ? 'fp-dot-done' : 'fp-dot-other');
+    dot.style.left = (it.tapX * sx) + 'px';
+    dot.style.top  = (it.tapY * sy) + 'px';
+    dot.title = it.title || '';
+    inner.appendChild(dot);
+  });
+}
+
+// ── AI MODAL ─────────────────────────────────────
+function openAIModal() {
+  mUnit = ''; mStatus = 'done'; mPhoto = null; addingPart = false; lockedColour = null;
+  document.getElementById('modalPhotoPrev').classList.add('hidden');
+  document.getElementById('photoAddBtn').style.display = 'flex';
+  document.getElementById('hintTxt').style.display = 'none';
+  document.getElementById('suggestRow').style.display = 'none';
+  closeUnitDropdown();
+  document.getElementById('modalBg').classList.remove('hidden');
+  showStep('stepLoad');
+  cropAndAnalyse(tapX, tapY, false);
+}
+function showStep(id) {
+  ['stepLoad','stepStatus','stepConfirm'].forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function closeModal() {
+  document.getElementById('modalBg').classList.add('hidden');
+  addingPart = false;
+  setHint('Tap a unit to add it to the report', 'rgba(45,42,38,0.85)');
+
+}
+function setHint(txt, bg) {
+  const h = document.getElementById('fpHint');
+  h.textContent = txt; h.style.background = bg;
+}
+
+async function cropAndAnalyse(cx, cy, appending) {
+  const img  = document.getElementById('fpImg');
+  const natW = img.naturalWidth, natH = img.naturalHeight;
+  const size = Math.min(160, natW * 0.18, natH * 0.18);
+  const x = Math.max(0, Math.min(cx - size / 2, natW - size));
+  const y = Math.max(0, Math.min(cy - size / 2, natH - size));
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const tmp = new Image();
+  tmp.onload = async () => {
+    ctx.drawImage(tmp, x, y, size, size, 0, 0, size, size);
+    const px = ctx.getImageData(size / 2, size / 2, 1, 1).data;
+    const col = { r: px[0], g: px[1], b: px[2] };
+    if (!appending) {
+      lockedColour = col;
+    } else if (lockedColour) {
+      const dist = Math.sqrt(
+        Math.pow(col.r - lockedColour.r, 2) +
+        Math.pow(col.g - lockedColour.g, 2) +
+        Math.pow(col.b - lockedColour.b, 2)
+      );
+      if (dist > 50) {
+        document.getElementById('modalBg').classList.add('hidden');
+        setHint('Wrong colour — tap a part of the same unit', 'rgba(192,67,43,0.92)');
+        setTimeout(() => setHint('Tap the next part of this unit', 'rgba(200,121,74,0.92)'), 2000);
+        return;
+      }
+    }
+    const b64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+    let result = { label: '', confident: true, variants: [] };
+    try {
+      // 15s timeout for AI call
+      const aiPromise = callAI(b64);
+      const timeout = new Promise(res => setTimeout(() => res({ label: '', confident: true, variants: [] }), 15000));
+      result = await Promise.race([aiPromise, timeout]);
+    } catch(e) {
+      result = { label: '', confident: true, variants: [] };
+    }
+    const name = result.label || '';
+    mUnit = appending ? mUnit + (name ? ' / ' + name : '') : name;
+    document.getElementById('mUnit').value = mUnit;
+    document.getElementById('hintTxt').style.display = 'block';
+    setHint('Tap a unit to add it to the report', 'rgba(45,42,38,0.85)');
+    document.getElementById('modalBg').classList.remove('hidden');
+    showUnitDropdown(mUnit);
+    // suggestions
+    const row = document.getElementById('suggestRow');
+    row.innerHTML = '';
+    if (!result.confident && result.variants && result.variants.length) {
+      const lbl = document.createElement('span');
+      lbl.style.cssText = 'font-size:10px;color:#b5b0a8;font-weight:700;letter-spacing:.06em;text-transform:uppercase;width:100%;margin-bottom:4px;display:block';
+      lbl.textContent = 'Not sure — tap correct:';
+      row.appendChild(lbl);
+      result.variants.forEach(v => {
+        const btn = document.createElement('button');
+        btn.className = 'suggest-chip';
+        btn.textContent = v;
+        btn.onclick = () => {
+          mUnit = appending ? mUnit.substring(0, mUnit.lastIndexOf(' / ') + 3) + v : v;
+          document.getElementById('mUnit').value = mUnit;
+          row.style.display = 'none';
+        };
+        row.appendChild(btn);
+      });
+      row.style.display = 'flex';
+    } else {
+      row.style.display = 'none';
+    }
+    if (multiTapMode) {
+      // in multi-tap mode skip confirm step - just show Completed/Other
+      document.getElementById('modalBg').classList.remove('hidden');
+    }
+    showStep('stepStatus');
+  };
+  tmp.onerror = () => {
+    // floor plan failed to load – open modal with empty name
+    mUnit = '';
+    document.getElementById('mUnit').value = '';
+    document.getElementById('hintTxt').style.display = 'block';
+    setHint('Tap a unit to add it to the report', 'rgba(45,42,38,0.85)');
+    document.getElementById('modalBg').classList.remove('hidden');
+    showStep('stepStatus');
+  };
+  tmp.src = fpData;
+}
+
+async function callAI(b64) {
+  const db = loadUdb();
+  const dbCtx = db.length ? 'Known unit names in this project (use these if they match what you see): ' + db.join(', ') + '.\n\n' : '';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 120,
+        messages: [{ role: 'user', content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 } },
+          { type: 'text', text: dbCtx + 'This is a cropped section of a retail store floor plan. The user tapped on a specific coloured unit/fixture. Labels may be rotated (90, 180, 270 degrees).\n\nRead the label of the unit closest to the very centre of this crop. Examples: RB5-DN, RBE-D, T2-D, TTS-D, MIRROR, RAIL, DN, RB1, G23-9.\n\nSome units have a number directly beside them in the same orientation (e.g. G23 with 9 right next to it becomes G23-9). Only combine if the number is immediately adjacent and same orientation.\n\nIf confident reply with only this JSON: {"label":"RB5-DN","confident":true,"variants":[]}\nIf uncertain reply with only this JSON: {"label":"RB5-DN","confident":false,"variants":["RB5-DN","RBS-DN","RB5-DM"]}\n\nJSON only, no markdown, no explanation.' }
+        ]}]
+      })
+    });
+    const data = await res.json();
+    console.log('AI response:', data);
+    if (data.error) { console.warn('AI error:', data.error); return { label: '', confident: true, variants: [] }; }
+    const raw = (data.content?.[0]?.text || '').trim().replace(/[`]{1,3}json?/g,'').replace(/[`]/g,'').trim();
+    try { return JSON.parse(raw); } catch { return { label: raw, confident: true, variants: [] }; }
+  } catch(e) { console.warn('callAI failed:', e); return { label: '', confident: true, variants: [] }; }
+}
+
+function addPart() {
+  mUnit = document.getElementById('mUnit').value.trim() || mUnit;
+  addingPart = true;
+  document.getElementById('modalBg').classList.add('hidden');
+  setHint('Tap the next part of this unit', 'rgba(200,121,74,0.92)');
+}
+function pickDone() {
+  const name = document.getElementById('mUnit').value.trim() || mUnit;
+  mUnit = name; mStatus = 'done';
+  saveUnitToHistory(name);
+  if (multiTapMode) { queueMultiTap(name, 'done', ''); return; }
+  document.getElementById('confirmUnit').textContent = name;
+  const el = document.getElementById('confirmComment');
+  el.value = name + ' completed'; el.readOnly = true; el.style.color = '#a09b93';
+  showStep('stepConfirm');
+}
+
+function pickOther() {
+  const name = document.getElementById('mUnit').value.trim() || mUnit;
+  mUnit = name; mStatus = 'other';
+  saveUnitToHistory(name);
+  if (multiTapMode) {
+    // For multi-tap other, open bulk modal with other option
+    multiTapQueue.push({ tapX: tapX, tapY: tapY, label: name, status: 'other' });
+    updateMultiTapBar();
+    closeModal();
+    return;
+  }
+  document.getElementById('confirmUnit').textContent = name;
+  const el = document.getElementById('confirmComment');
+  el.value = name + ' '; el.readOnly = false; el.style.color = '#2d2a26';
+  el.placeholder = 'Describe the status…';
+  showStep('stepConfirm');
+  setTimeout(() => { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }, 100);
+}
+function triggerModalPhoto() { document.getElementById('modalPhotoFile').value = ''; document.getElementById('modalPhotoFile').click(); }
+function handleModalPhoto(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    compressPhoto(ev.target.result, compressed => {
+      mPhoto = compressed || ev.target.result;
+      const pv = document.getElementById('modalPhotoPrev');
+      pv.src = mPhoto; pv.classList.remove('hidden');
+      document.getElementById('photoAddBtn').style.display = 'none';
+    });
+  };
+  r.readAsDataURL(f);
+}
+function confirmAdd() {
+  try {
+    const comment = document.getElementById('confirmComment').value.trim();
+    const title = autoNumberedTitle(mUnit);
+    const it = mkItem({ title, comments: comment, status: mStatus, statusLabel: mStatus === 'other' ? comment : '', url: mPhoto, tapX: tapX, tapY: tapY });
+    items.push(it);
+    if (mUnit) { addToUdb(mUnit); saveUnitToHistory(mUnit); }
+  } catch(e) { console.warn('confirmAdd error:', e); }
+  closeModal();
+  renderDots();
+  renderList();
+  saveCurProj();
+  saveAll();
+}
+
+// ── PDF ──────────────────────────────────────────
+function fmtDate(s) {
+  if (!s) return '';
+  return new Date(s + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+async function generatePDF(mode = 'download') {
+  const title  = (document.getElementById('rTitle').value.trim()  || 'Field Report').toUpperCase();
+  const client = document.getElementById('rClient').value.trim();
+  const date   = fmtDate(document.getElementById('rDate').value);
+  const prepBy = document.getElementById('rPrepBy').value.trim();
+  const btn    = document.getElementById('exportBtn');
+  const status = document.getElementById('statusMsg');
+  btn.disabled = true; btn.textContent = 'Building…'; status.textContent = '';
+  await new Promise(r => setTimeout(r, 60));
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = 210, H = 297, M = 20;
+    doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(24); doc.setTextColor(18,18,18);
+    doc.text(title, M, H * 0.47);
+    doc.setDrawColor(200,121,74); doc.setLineWidth(1);
+    doc.line(M, H * 0.47 + 5, W - M, H * 0.47 + 5);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(40,40,40);
+    let y = H * 0.47 + 17;
+    if (date)   { doc.text(date, M, y); y += 7; }
+    if (prepBy) { doc.text('Prepared by ' + prepBy, M, y); y += 7; }
+    doc.text('Prepared For ' + (client || 'Primark'), M, y); y += 7;
+    doc.text(items.length + ' ' + (items.length === 1 ? 'Issue' : 'Issues') + ' Identified', M, y);
+    // 4 items per page, photo left (aspect-ratio preserved), text right
+    const PER = 4;
+    const iMaxW = 58, iMaxH = 48; // max photo size in mm
+    const tX = M + iMaxW + 8, tW = W - tX - M;
+    const rowH = iMaxH + 10;
+    let bucket = [];
+
+    for (let i = 0; i < items.length; i++) {
+      bucket.push(items[i]);
+      if (bucket.length === PER || i === items.length - 1) {
+        doc.addPage(); doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F');
+        let py = M;
+        for (const it of bucket) {
+          // red line
+          doc.setDrawColor(210,50,40); doc.setLineWidth(0.5);
+          doc.line(M, py, W-M, py); py += 4;
+
+          // photo - preserve aspect ratio
+          // text always starts at tX (fixed), portrait photo shifts right toward text
+          let actualH = iMaxH;
+          let actualW = iMaxW;
+          if (it.url) {
+            try {
+              const tmpImg = new Image();
+              tmpImg.src = it.url;
+              const nw = tmpImg.naturalWidth || 4;
+              const nh = tmpImg.naturalHeight || 3;
+              const aspect = nw / nh;
+              let dw, dh;
+              if (aspect >= 1) {
+                // landscape: fill max width
+                dw = iMaxW; dh = dw / aspect;
+                if (dh > iMaxH) { dh = iMaxH; dw = dh * aspect; }
+              } else {
+                // portrait: fit height, photo shifts right to sit closer to text
+                dh = iMaxH; dw = dh * aspect;
+                if (dw > iMaxW) { dw = iMaxW; dh = dw / aspect; }
+              }
+              actualH = dh;
+              actualW = dw;
+              // portrait: align photo to the right of its slot (closer to text)
+              const photoX = aspect < 1 ? M + (iMaxW - dw) : M;
+              doc.addImage(it.url, it.url.startsWith('data:image/png') ? 'PNG' : 'JPEG', photoX, py, dw, dh);
+            } catch(e) {
+              doc.setFillColor(238,238,238); doc.rect(M,py,iMaxW,iMaxH,'F');
+            }
+          } else {
+            doc.setFillColor(238,238,238); doc.rect(M,py,iMaxW,iMaxH,'F');
+          }
+
+          // title and comments always at fixed tX position
+          const textX = tX;
+          const textW = tW;
+          doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(18,18,18);
+          doc.text(it.title || 'Item', textX, py + 7);
+
+          // comments
+          if (it.comments) {
+            doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(60,60,60);
+            doc.text(doc.splitTextToSize(it.comments, textW), textX, py + 14);
+          }
+
+          py += Math.max(actualH, 12) + 10;
+        }
+        bucket = [];
+      }
+    }
+
+    // page numbers
+    const pages = doc.getNumberOfPages();
+    for (let pg = 2; pg <= pages; pg++) {
+      doc.setPage(pg); doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(160,160,160);
+      doc.text(pg + ' / ' + pages, W/2, H-10, { align:'center' });
+    }
+
+    const fname = (document.getElementById('rTitle').value.trim() || 'report').replace(/[^a-zA-Z0-9\- ]/g,'').replace(/ /g,'-');
+    if (mode === 'share' && navigator.share && navigator.canShare) {
+      // Use Web Share API (iOS share sheet – WhatsApp, Mail, AirDrop etc.)
+      const pdfBlob = doc.output('blob');
+      const file = new File([pdfBlob], fname + '.pdf', { type: 'application/pdf' });
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: fname });
+          status.textContent = '✓ Shared!';
+        } catch(e) {
+          if (e.name !== 'AbortError') {
+            // fallback to download
+            doc.save(fname + '.pdf');
+            status.textContent = '✓ PDF saved!';
+          }
+        }
+      } else {
+        doc.save(fname + '.pdf');
+        status.textContent = '✓ PDF saved!';
+      }
+    } else {
+      doc.save(fname + '.pdf');
+      status.textContent = '✓ PDF saved!';
+    }
+    clearUnitHistory();
+  } catch(e) { status.textContent = 'Error. Try again.'; }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF';
+}
+
+// ── UNIT HISTORY (persistent via localStorage) ───
+function loadUnitHistory() {
+  if (curProjId == null) return [];
+  const proj = projects.find(p => p.id === curProjId);
+  return proj ? (proj.unitHistory || []) : [];
+}
+function saveUnitToHistory(name) {
+  if (!name || !name.trim() || curProjId == null) return;
+  const proj = projects.find(p => p.id === curProjId);
+  if (!proj) return;
+  if (!proj.unitHistory) proj.unitHistory = [];
+  proj.unitHistory = proj.unitHistory.filter(u => u !== name);
+  proj.unitHistory.unshift(name);
+  if (proj.unitHistory.length > 50) proj.unitHistory = proj.unitHistory.slice(0, 50);
+}
+function clearUnitHistory() {
+  if (curProjId == null) return;
+  const proj = projects.find(p => p.id === curProjId);
+  if (proj) proj.unitHistory = [];
+}
+function showUnitDropdown(currentVal) {
+  const dd = document.getElementById('unitDropdown');
+  const h = loadUnitHistory();
+  const matches = h.filter(u => !currentVal || u.toLowerCase().includes(currentVal.toLowerCase()));
+  if (!matches.length) { dd.classList.add('hidden'); return; }
+  dd.innerHTML = '';
+  matches.slice(0, 8).forEach(u => {
+    const d = document.createElement('div');
+    d.className = 'unit-drop-item';
+    d.textContent = u;
+    d.onclick = () => {
+      document.getElementById('mUnit').value = u;
+      mUnit = u;
+      closeUnitDropdown();
+    };
+    dd.appendChild(d);
+  });
+  dd.classList.remove('hidden');
+}
+function onUnitInput(val) {
+  mUnit = val;
+  showUnitDropdown(val);
+}
+function closeUnitDropdown() {
+  const dd = document.getElementById('unitDropdown');
+  if (dd) dd.classList.add('hidden');
+}
+
+// ── MULTI-TAP MODE ───────────────────────────────
+// multiTapQueue: [{tapX, tapY, label}]
+// After Done → group by label, create items with "3x RB5-DN / RBE-D"
+function toggleMultiTap() {
+  // Just open the quick-pick modal directly — no AI, no floor plan tapping
+  multiTapQueue = [];
+  openQp();
+}
+function updateAddMoreBtn() {
+  const btn = document.getElementById('fpAddMore');
+  if (!btn) return;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add more units';
+}
+function queueMultiTap(label, status, comment) {}  // unused now
+function updateMultiTapBar() {}  // unused now
+
+// ── QUICK-PICK MODAL ─────────────────────────────
+function openQp() {
+  multiTapQueue = [];
+  document.getElementById('qpInput').value = '';
+  renderQpHistory('');
+  renderQpQueue();
+  document.getElementById('qpBg').classList.remove('hidden');
+  setTimeout(() => document.getElementById('qpInput').focus(), 120);
+}
+function closeQp() {
+  document.getElementById('qpBg').classList.add('hidden');
+  multiTapQueue = [];
+}
+function onQpInput(val) {
+  renderQpHistory(val);
+}
+function renderQpHistory(filter) {
+  const h = loadUnitHistory();
+  const wrap = document.getElementById('qpHistory');
+  const matches = h.filter(u => !filter || u.toLowerCase().includes(filter.toLowerCase())).slice(0, 10);
+  wrap.innerHTML = '';
+  matches.forEach(u => {
+    const chip = document.createElement('button');
+    chip.className = 'qp-chip';
+    chip.textContent = u;
+    chip.onclick = () => qpAddName(u);
+    wrap.appendChild(chip);
+  });
+}
+function qpAddCurrent() {
+  const val = document.getElementById('qpInput').value.trim();
+  if (!val) return;
+  qpAddName(val);
+  document.getElementById('qpInput').value = '';
+  renderQpHistory('');
+  document.getElementById('qpInput').focus();
+}
+function qpAddName(name) {
+  if (!name) return;
+  multiTapQueue.push({ label: name, tapX: null, tapY: null });
+  saveUnitToHistory(name);
+  renderQpQueue();
+  renderQpHistory(document.getElementById('qpInput').value);
+}
+function qpRemove(idx) {
+  multiTapQueue.splice(idx, 1);
+  renderQpQueue();
+}
+function renderQpQueue() {
+  const wrap = document.getElementById('qpQueue');
+  const btn = document.getElementById('qpDoneBtn');
+  wrap.innerHTML = '';
+  if (!multiTapQueue.length) { btn.disabled = true; return; }
+  btn.disabled = false;
+  // group by label for display
+  const groups = {};
+  multiTapQueue.forEach((q, i) => {
+    if (!groups[q.label]) groups[q.label] = { count: 0, indices: [] };
+    groups[q.label].count++;
+    groups[q.label].indices.push(i);
+  });
+  Object.entries(groups).forEach(([label, g]) => {
+    const row = document.createElement('div');
+    row.className = 'qp-queue-item';
+    const title = g.count > 1 ? g.count + 'x ' + label : label;
+    row.innerHTML = '<span>' + title + '</span>';
+    const del = document.createElement('button');
+    del.className = 'qp-queue-del';
+    del.textContent = '×';
+    del.onclick = () => {
+      // remove last occurrence
+      const lastIdx = g.indices[g.indices.length - 1];
+      multiTapQueue.splice(lastIdx, 1);
+      renderQpQueue();
+    };
+    row.appendChild(del);
+    wrap.appendChild(row);
+  });
+}
+function qpDone() {
+  document.getElementById('qpBg').classList.add('hidden');
+  if (multiTapQueue.length > 0) openBulkModal();
+}
+
+// ── BULK MODAL ───────────────────────────────────
+function getBulkGroups() {
+  // Group by label, count occurrences, keep last tapX/Y per label
+  const map = {};
+  multiTapQueue.forEach(q => {
+    if (!map[q.label]) map[q.label] = { count: 0, tapX: q.tapX, tapY: q.tapY };
+    map[q.label].count++;
+    map[q.label].tapX = q.tapX;
+    map[q.label].tapY = q.tapY;
+  });
+  return Object.entries(map).map(([label, v]) => ({
+    label: label,
+    count: v.count,
+    title: v.count > 1 ? v.count + 'x ' + label : label,
+    tapX: v.tapX,
+    tapY: v.tapY
+  }));
+}
+function openBulkModal() {
+  const groups = getBulkGroups();
+  const total = multiTapQueue.length;
+  document.getElementById('bulkTitle').textContent = 'Set status — ' + total + ' unit' + (total !== 1 ? 's' : '');
+  document.getElementById('bulkSub').textContent = groups.map(g => g.title).join(', ');
+  document.getElementById('bulkOtherWrap').classList.add('hidden');
+  document.getElementById('bulkComment').value = '';
+  document.getElementById('bulkConfirmBtn').style.display = 'none';
+  document.getElementById('bulkModalBg').classList.remove('hidden');
+}
+function resetBulk() {
+  multiTapQueue = []; multiTapMode = false;
+  const btn = document.getElementById('fpAddMore');
+  if (btn) { btn.classList.remove('on'); updateAddMoreBtn(); }
+  setHint('Tap a unit to add it to the report', 'rgba(45,42,38,0.85)');
+}
+function closeBulkModal() {
+  document.getElementById('bulkModalBg').classList.add('hidden');
+  resetBulk();
+}
+function bulkPickDone() {
+  const groups = getBulkGroups();
+  groups.forEach(g => {
+    const it = mkItem({ title: g.title, comments: g.title + ' completed', status: 'done', url: null, tapX: g.tapX, tapY: g.tapY });
+    items.push(it);
+  });
+  document.getElementById('bulkModalBg').classList.add('hidden');
+  resetBulk();
+  renderDots(); renderList();
+}
+function bulkPickOther() {
+  document.getElementById('bulkOtherWrap').classList.remove('hidden');
+  document.getElementById('bulkConfirmBtn').style.display = 'flex';
+  setTimeout(() => document.getElementById('bulkComment').focus(), 100);
+}
+function confirmBulk() {
+  const comment = document.getElementById('bulkComment').value.trim();
+  const groups = getBulkGroups();
+  groups.forEach(g => {
+    const it = mkItem({ title: g.title, comments: comment || g.title, status: 'other', statusLabel: comment, url: null, tapX: g.tapX, tapY: g.tapY });
+    items.push(it);
+  });
+  document.getElementById('bulkModalBg').classList.add('hidden');
+  resetBulk();
+  renderDots(); renderList();
+}
+
+// ── TAB SWITCHING ────────────────────────────────
+let ovIndex = 0;
+function switchTab(tab) {
+  if (tab === 'overview') {
+    ovIndex = 0;
+    renderOverview();
+    show('s-overview');
+  } else {
+    show('s-list');
+    renderList();
+  }
+}
+
+// ── OVERVIEW ─────────────────────────────────────
+function renderOverview() {
+  const body = document.getElementById('ovBody');
+  const nav  = document.getElementById('ovNav');
+  const expBtn = document.getElementById('ovExportBtn');
+  if (!items.length) {
+    body.innerHTML = '<div class="ov-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>No items yet</span></div>';
+    nav.style.display = 'none'; expBtn.classList.add('hidden'); return;
+  }
+  nav.style.display = 'flex';
+  expBtn.classList.remove('hidden');
+  const it = items[ovIndex];
+  const st = it.status === 'done'
+    ? '<span class="badge badge-done">Completed</span>'
+    : it.status === 'other'
+    ? '<span class="badge badge-other">' + esc(it.statusLabel || 'Other') + '</span>' : '';
+  body.innerHTML = '';
+
+  // card
+  const card = document.createElement('div');
+  card.className = 'ov-card';
+
+  // photo
+  if (it.url) {
+    const img = document.createElement('img');
+    img.className = 'ov-photo'; img.src = it.url; img.alt = '';
+    card.appendChild(img);
+  } else {
+    const ep = document.createElement('div');
+    ep.className = 'ov-photo-empty';
+    ep.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+    card.appendChild(ep);
+  }
+
+  // info section with editable fields
+  const info = document.createElement('div');
+  info.className = 'ov-info';
+
+  // counter + badge row
+  const topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px';
+  topRow.innerHTML = '<span class="ov-counter" style="font-size:12px;font-weight:600;color:#a09b93">' + (ovIndex+1) + ' / ' + items.length + '</span>' + st;
+  info.appendChild(topRow);
+
+  // title field
+  const titleLbl = document.createElement('div');
+  titleLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px';
+  titleLbl.textContent = 'Title';
+  info.appendChild(titleLbl);
+
+  const titleInput = document.createElement('input');
+  titleInput.value = it.title || '';
+  titleInput.placeholder = 'Unit name';
+  titleInput.style.cssText = 'width:100%;font-size:17px;font-weight:700;color:#2d2a26;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;margin-bottom:14px;padding:0';
+  titleInput.oninput = (e) => {
+    it.title = e.target.value;
+  };
+  info.appendChild(titleInput);
+
+  // comments field
+  const commLbl = document.createElement('div');
+  commLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px';
+  commLbl.textContent = 'Comments';
+  info.appendChild(commLbl);
+
+  const commInput = document.createElement('textarea');
+  commInput.value = it.comments || '';
+  commInput.placeholder = 'Add a comment…';
+  commInput.rows = 2;
+  commInput.style.cssText = 'width:100%;font-size:14px;color:#6b6760;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;resize:none;line-height:1.5;padding:0;margin-bottom:14px';
+  commInput.oninput = (e) => {
+    it.comments = e.target.value;
+  };
+  info.appendChild(commInput);
+
+  // status row
+  const stLbl = document.createElement('div');
+  stLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:6px';
+  stLbl.textContent = 'Status';
+  info.appendChild(stLbl);
+
+  const stRow = document.createElement('div');
+  stRow.style.cssText = 'display:flex;gap:8px';
+  ['done','other'].forEach(key => {
+    const btn = document.createElement('button');
+    const isActive = it.status === key;
+    btn.style.cssText = 'padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif;' +
+      (key === 'done'
+        ? (isActive ? 'background:#e6f3de;color:#3b6d11;' : 'background:#f0ede8;color:#a09b93;')
+        : (isActive ? 'background:#e8e5de;color:#2d2a26;' : 'background:#f0ede8;color:#a09b93;'));
+    btn.textContent = key === 'done' ? 'Completed' : (it.statusLabel || 'Other');
+    btn.onclick = () => {
+      it.status = key;
+      if (key === 'done') it.comments = (it.title || '') + ' completed';
+      renderOverview();
+    };
+    stRow.appendChild(btn);
+  });
+  info.appendChild(stRow);
+
+  card.appendChild(info);
+  body.appendChild(card);
+
+  // nav buttons
+  document.querySelector('.ov-prev').disabled = ovIndex === 0;
+  document.querySelector('.ov-prev').style.opacity = ovIndex === 0 ? '0.35' : '1';
+  const isLast = ovIndex === items.length - 1;
+  const nextBtn = document.querySelector('.ov-next');
+  if (isLast) {
+    nextBtn.innerHTML = 'Done <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    nextBtn.style.background = '#639922';
+  } else {
+    nextBtn.innerHTML = 'Next <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+    nextBtn.style.background = '#2d2a26';
+  }
+}
+function ovMove(dir) {
+  if (dir === 1 && ovIndex === items.length - 1) { goExport(); return; }
+  ovIndex = Math.max(0, Math.min(items.length - 1, ovIndex + dir));
+  renderOverview();
+}
+
+// ── COPY PROJECT MODAL ────────────────────────────
+function toggleNamePicker() {
+  const picker = document.getElementById('namePicker');
+  if (!picker.classList.contains('hidden')) {
+    picker.classList.add('hidden'); return;
+  }
+  picker.innerHTML = '';
+  // collect unique names from previous projects
+  const names = [...new Set([...projects].reverse().map(p => p.name).filter(Boolean))];
+  if (!names.length) {
+    picker.innerHTML = '<div class="name-picker-empty">No previous projects yet</div>';
+  } else {
+    names.forEach(name => {
+      const d = document.createElement('div');
+      d.className = 'name-picker-item';
+      d.textContent = name;
+      d.onclick = () => {
+        document.getElementById('pmName').value = name;
+        picker.classList.add('hidden');
+      };
+      picker.appendChild(d);
+    });
+  }
+  picker.classList.remove('hidden');
+  // close on outside tap
+  setTimeout(() => {
+    document.addEventListener('click', function closePickerOnce(e) {
+      if (!picker.contains(e.target)) {
+        picker.classList.add('hidden');
+        document.removeEventListener('click', closePickerOnce);
+      }
+    });
+  }, 10);
+}
+function openCopyProjModal() { toggleNamePicker(); }
+
+// ── UNIT DATABASE ────────────────────────────────
+function loadUdb() {
+  return globalUnitDb;
+}
+function saveUdb(db) {
+  globalUnitDb = db;
+  saveAll();
+}
+function udbAdd() {
+  const val = document.getElementById('udbInput').value.trim();
+  if (!val) return;
+  addToUdb(val);
+  document.getElementById('udbInput').value = '';
+  renderUdb();
+}
+function addToUdb(name) {
+  if (!name) return;
+  if (!globalUnitDb.includes(name)) {
+    globalUnitDb.unshift(name);
+    if (globalUnitDb.length > 200) globalUnitDb = globalUnitDb.slice(0, 200);
+    saveAll();
+  }
+}
+function renderUdb() {
+  const body = document.getElementById('udbBody');
+  const db = loadUdb();
+  body.innerHTML = '';
+  if (!db.length) {
+    body.innerHTML = '<div class="empty-msg">No units yet.<br>Add unit names above.</div>';
+    return;
+  }
+  db.forEach((name, i) => {
+    const row = document.createElement('div');
+    row.className = 'udb-item';
+    row.innerHTML = '<span class="udb-name">' + esc(name) + '</span>';
+    const del = document.createElement('button');
+    del.className = 'udb-del'; del.textContent = '×';
+    del.onclick = () => {
+      let db2 = loadUdb(); db2.splice(i, 1); saveUdb(db2); renderUdb();
+    };
+    row.appendChild(del);
+    body.appendChild(row);
+  });
+}
+
+// ── AUTOCOMPLETE (title input in detail) ─────────────────────────────────
+function onTitleInput(val) {
+  saveField('title', val);
+  const dd = document.getElementById('acDropdown');
+  if (!dd) return;
+  const db = loadUdb();
+  const h = loadUnitHistory();
+  // merge DB + history, deduplicated
+  const all = [...new Set([...db, ...h])];
+  const matches = all.filter(u => val && u.toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+  if (!matches.length) { dd.classList.add('hidden'); return; }
+  dd.innerHTML = '';
+  matches.forEach(u => {
+    const d = document.createElement('div');
+    d.className = 'ac-item'; d.textContent = u;
+    d.onmousedown = (e) => {
+      e.preventDefault();
+      document.getElementById('dTitle').value = u;
+      saveField('title', u);
+      dd.classList.add('hidden');
+    };
+    dd.appendChild(d);
+  });
+  dd.classList.remove('hidden');
+}
+
+// ── QUICK ADD ────────────────────────────────────
+let qaStatus = '', qaPhoto = null;
+
+function openQa() {
+  qaStatus = ''; qaPhoto = null;
+  document.getElementById('qaUnit').value = '';
+  document.getElementById('qaAc').style.display = 'none';
+  document.getElementById('qaOtherInput').style.display = 'none';
+  document.getElementById('qaOtherInput').value = '';
+  document.getElementById('qaPhotoPrev').style.display = 'none';
+  document.getElementById('qaConfirmBtn').disabled = true;
+  ['qaBtnCompleted','qaBtnPlaced','qaBtnOther'].forEach(id =>
+    document.getElementById(id).classList.remove('selected')
+  );
+  document.getElementById('qaBg').classList.remove('hidden');
+  setTimeout(() => document.getElementById('qaUnit').focus(), 150);
+}
+function closeQa() { document.getElementById('qaBg').classList.add('hidden'); }
+
+function qaPickStatus(s) {
+  qaStatus = s;
+  ['qaBtnCompleted','qaBtnPlaced','qaBtnOther'].forEach(id =>
+    document.getElementById(id).classList.remove('selected')
+  );
+  const map = { completed: 'qaBtnCompleted', placed: 'qaBtnPlaced', other: 'qaBtnOther' };
+  document.getElementById(map[s]).classList.add('selected');
+  const oi = document.getElementById('qaOtherInput');
+  if (s === 'other') {
+    oi.style.display = 'block';
+    setTimeout(() => oi.focus(), 100);
+  } else {
+    oi.style.display = 'none';
+  }
+  updateQaConfirm();
+}
+
+function onQaUnitInput(val) {
+  updateQaConfirm();
+  const ac = document.getElementById('qaAc');
+  const db = loadUdb();
+  const h  = loadUnitHistory();
+  const all = [...new Set([...db, ...h])];
+  const matches = all.filter(u => val && u.toLowerCase().includes(val.toLowerCase())).slice(0, 6);
+  if (!matches.length) { ac.style.display = 'none'; return; }
+  ac.innerHTML = '';
+  matches.forEach(u => {
+    const d = document.createElement('div');
+    d.className = 'qa-ac-item'; d.textContent = u;
+    d.onmousedown = e => { e.preventDefault(); document.getElementById('qaUnit').value = u; ac.style.display = 'none'; updateQaConfirm(); };
+    ac.appendChild(d);
+  });
+  ac.style.display = 'block';
+}
+
+function updateQaConfirm() {
+  const hasUnit = document.getElementById('qaUnit').value.trim().length > 0;
+  const hasStatus = qaStatus !== '';
+  document.getElementById('qaConfirmBtn').disabled = !(hasUnit && hasStatus);
+}
+
+function triggerQaCamera()  { document.getElementById('qaCameraFile').value  = ''; document.getElementById('qaCameraFile').click(); }
+function triggerQaGallery() { document.getElementById('qaGalleryFile').value = ''; document.getElementById('qaGalleryFile').click(); }
+function handleQaPhoto(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    compressPhoto(ev.target.result, compressed => {
+      qaPhoto = compressed || ev.target.result;
+      const pv = document.getElementById('qaPhotoPrev');
+      pv.src = qaPhoto; pv.style.display = 'block';
+    });
+  };
+  r.readAsDataURL(f);
+}
+
+function autoNumberedTitle(baseTitle) {
+  const base = baseTitle.replace(/ #\d+$/, '');
+  const existing = items.filter(x => {
+    const xBase = (x.title || '').replace(/ #\d+$/, '');
+    return xBase === base;
+  });
+  // Only one so far – no numbering needed yet
+  if (existing.length === 0) return base;
+  // Adding second: rename first to #1, new one gets #2
+  if (existing.length === 1) {
+    if (!/ #\d+$/.test(existing[0].title)) {
+      existing[0].title = base + ' #1';
+    }
+    return base + ' #2';
+  }
+  // Adding more: just increment
+  return base + ' #' + (existing.length + 1);
+}
+function confirmQa() {
+  const unit = document.getElementById('qaUnit').value.trim();
+  if (!unit || !qaStatus) return;
+  const title = autoNumberedTitle(unit);
+  let comment = '';
+  let statusLabel = '';
+  if (qaStatus === 'completed') { comment = title + ' completed'; }
+  else if (qaStatus === 'placed') { comment = title + ' placed'; }
+  else { comment = document.getElementById('qaOtherInput').value.trim() || title; statusLabel = comment; }
+  const it = mkItem({ title, comments: comment, status: qaStatus === 'other' ? 'other' : 'done', statusLabel, url: qaPhoto });
+  if (qaStatus === 'placed') { it.status = 'placed'; it.statusLabel = 'Placed'; }
+  items.push(it);
+  addToUdb(unit.replace(/ #\d+$/, ''));
+  saveUnitToHistory(unit.replace(/ #\d+$/, ''));
+  closeQa();
+  renderList();
+  saveCurProj(); saveAll();
+}
+
+// ── UTILS ────────────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
