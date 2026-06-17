@@ -2807,8 +2807,7 @@ function renderUdb() {
 }
 function udbExport() {
   const db = loadUdb();
-  const txt = db.join('
-');
+  const txt = db.join('\n');
   const blob = new Blob([txt], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url;
