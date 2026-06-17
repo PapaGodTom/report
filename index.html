@@ -3047,11 +3047,15 @@ function confirmBulk() {
 let ovIndex = 0;
 function switchTab(tab) {
   if (tab === 'overview') {
-    ovIndex = 0;
-    _ovRendering = false; // reset guard
+    // Make sure items are from current project
+    const proj = projects.find(p => p.id === curProjId);
+    if (proj) items = proj.items || [];
+    ovIndex = Math.max(0, Math.min(ovIndex, items.length - 1));
+    _ovRendering = false;
     clearTimeout(_ovMoveTimer);
     show('s-overview');
-    renderOverview();
+    // Small delay to ensure DOM is ready
+    setTimeout(() => renderOverview(), 50);
   } else {
     show('s-list');
     renderList();
