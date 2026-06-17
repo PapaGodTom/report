@@ -784,9 +784,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qp-done:disabled{opacity:.4}
 .hidden{display:none}
 /* TAB BAR */
-.tab-bar{display:none;flex-shrink:0;background:transparent;padding:10px 32px calc(env(safe-area-inset-bottom,0px)+16px);position:relative;z-index:1;justify-content:center;gap:12px}
+.tab-bar{display:none;flex-shrink:0;background:transparent;padding:16px 32px calc(env(safe-area-inset-bottom,0px)+20px);position:relative;z-index:1;justify-content:center;gap:12px}
 .tab-bar.visible{display:flex}
-.tab-btn{display:flex;flex-direction:row;align-items:center;gap:7px;border:none;background:#fff;cursor:pointer;padding:11px 22px;font-family:'Comfortaa',sans-serif;border-radius:24px;box-shadow:0 2px 12px rgba(45,42,38,0.10);border:0.5px solid #e8e5de}
+.tab-btn{display:flex;flex-direction:row;align-items:center;gap:8px;border:none;background:#fff;cursor:pointer;padding:14px 28px;font-family:'Comfortaa',sans-serif;border-radius:28px;box-shadow:0 4px 16px rgba(45,42,38,0.12);border:0.5px solid #e8e5de;min-height:48px}
 .tab-btn svg{color:#b5b0a8}
 .tab-btn span{font-size:12px;font-weight:600;color:#b5b0a8}
 .tab-btn.active{background:#2d2a26;border-color:#2d2a26;box-shadow:0 4px 16px rgba(45,42,38,0.22)}
@@ -3048,8 +3048,10 @@ let ovIndex = 0;
 function switchTab(tab) {
   if (tab === 'overview') {
     ovIndex = 0;
-    renderOverview();
+    _ovRendering = false; // reset guard
+    clearTimeout(_ovMoveTimer);
     show('s-overview');
+    renderOverview();
   } else {
     show('s-list');
     renderList();
