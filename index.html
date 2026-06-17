@@ -14,7 +14,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-family:'Comfortaa',sans-serif;overscroll-behavior:none}
-.app{max-width:480px;margin:0 auto;height:100%;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;background:#f5f3ef;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
+.app{max-width:480px;margin:0 auto;height:100%;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;background:#f5f3ef;overflow:visible;position:fixed;top:0;left:0;right:0;bottom:0}
 .screen{display:none;flex-direction:column;height:100%;max-height:100%;overflow:hidden;min-height:0}
 .screen.active{display:flex;height:100%;max-height:100%;animation:screenIn .18s ease}
 /* NAV */
@@ -1056,7 +1056,6 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
   </div>
 </div>
 
-</div><!-- .app -->
 
 <!-- AI MODAL -->
 <div class="modal-bg hidden" id="modalBg" onclick="if(event.target===this)closeModal()">
@@ -2822,7 +2821,8 @@ function udbImport() {
     const file = e.target.files[0]; if (!file) return;
     const r = new FileReader();
     r.onload = ev => {
-      const lines = ev.target.result.split(/?
+      const lines = ev.target.result.split(/
+?
 /).map(l => l.trim()).filter(Boolean);
       if (!lines.length) { alert('No units found in file'); return; }
       const existing = loadUdb();
@@ -2986,5 +2986,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+</div><!-- .app -->
 </body>
 </html>
