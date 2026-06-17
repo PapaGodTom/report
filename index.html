@@ -3058,12 +3058,15 @@ function switchTab(tab) {
 
 // ── OVERVIEW ─────────────────────────────────────
 function renderOverview() {
+  if (_ovRendering) return;
+  _ovRendering = true;
   const body = document.getElementById('ovBody');
   const nav  = document.getElementById('ovNav');
   const expBtn = document.getElementById('ovExportBtn');
   if (!items.length) {
     body.innerHTML = '<div class="ov-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>No items yet</span></div>';
-    nav.style.display = 'none'; expBtn.classList.add('hidden'); return;
+    nav.style.display = 'none'; expBtn.classList.add('hidden');
+    _ovRendering = false; return;
   }
   nav.style.display = 'flex';
   expBtn.classList.remove('hidden');
@@ -3171,11 +3174,17 @@ function renderOverview() {
     nextBtn.innerHTML = 'Next <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
     nextBtn.style.background = '#2d2a26';
   }
+  _ovRendering = false;
 }
+
 function ovMove(dir) {
   if (dir === 1 && ovIndex === items.length - 1) { goExport(); return; }
   ovIndex = Math.max(0, Math.min(items.length - 1, ovIndex + dir));
-  renderOverview();
+  // Debounce rapid taps – wait 80ms before rendering
+  clearTimeout(_ovMoveTimer);
+  _ovMoveTimer = setTimeout(() => {
+    if (!_ovRendering) renderOverview();
+  }, 80);
 }
 
 // ── COPY PROJECT MODAL ────────────────────────────
