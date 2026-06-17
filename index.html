@@ -2820,9 +2820,7 @@ function udbImport() {
     const file = e.target.files[0]; if (!file) return;
     const r = new FileReader();
     r.onload = ev => {
-      const lines = ev.target.result.split(/
-?
-/).map(l => l.trim()).filter(Boolean);
+      const lines = ev.target.result.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
       if (!lines.length) { alert('No units found in file'); return; }
       const existing = loadUdb();
       const merged = [...new Set([...existing, ...lines])];
