@@ -16,7 +16,7 @@
 html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-family:'Comfortaa',sans-serif;overscroll-behavior:none}
 .app{max-width:480px;margin:0 auto;height:100%;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;background:#f5f3ef;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0}
 .screen{display:none;flex-direction:column;height:100%;max-height:100%;overflow:hidden;min-height:0}
-.screen.active{display:flex;height:100%;max-height:100%}
+.screen.active{display:flex;height:100%;max-height:100%;animation:screenIn .18s ease}
 /* NAV */
 .nav{padding-top:calc(env(safe-area-inset-top,0px) + 20px);padding-left:20px;padding-right:20px;padding-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f5f3ef}
 .nav-title{font-size:13px;font-weight:600;letter-spacing:.06em;color:#8a8680;text-transform:uppercase;flex:1;text-align:center;padding:0 8px}
@@ -115,7 +115,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .modal-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .modal-bg/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -136,6 +163,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .modal{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px);max-height:90vh;overflow-y:auto}
 .m-handle{width:36px;height:4px;background:#d3d1c7;border-radius:2px;margin:0 auto 18px}
@@ -155,7 +209,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .unit-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;border:0.5px solid #e8e5de;border-top:none;box-shadow:0 8px 20px rgba(45,42,38,0.12);z-index:10;max-height:180px;overflow-y:auto}
 .unit-dropdown/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -176,6 +257,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .unit-drop-item{padding:11px 16px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif}
 .unit-drop-item:last-child{border-bottom:none}
@@ -200,7 +308,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .pm-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .pm-bg/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -221,6 +356,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .pm-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:28px 20px calc(env(safe-area-inset-bottom,0px)+28px);overflow-y:auto;max-height:90vh}
 .pm-title{font-size:16px;font-weight:700;color:#2d2a26;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;padding:0 15% 0 15%}
@@ -234,7 +396,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .name-picker{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border-radius:16px;border:0.5px solid #e8e5de;box-shadow:0 8px 24px rgba(45,42,38,0.14);z-index:50;min-width:220px;max-height:240px;overflow-y:auto;padding:6px}
 .name-picker/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -255,6 +444,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .name-picker-item{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:600;color:#2d2a26;cursor:pointer;font-family:'Comfortaa',sans-serif}
 .name-picker-item:hover{background:#f5f3ef}
@@ -263,7 +479,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qp-bg{position:fixed;inset:0;background:rgba(20,18,16,0.45);z-index:150;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .qp-bg/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -284,6 +527,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .qp-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+28px);overflow-y:auto;max-height:85vh}
 .qp-title{font-size:12px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
@@ -324,7 +594,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .bulk-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
 .bulk-bg/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -345,6 +642,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 /* UNIT DB */
 .udb-body{flex:1;padding:0 16px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(env(safe-area-inset-bottom,0px)+24px)}
@@ -359,7 +683,34 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .ac-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;border:0.5px solid #e8e5de;border-top:none;box-shadow:0 8px 20px rgba(45,42,38,0.12);z-index:20;max-height:200px;overflow-y:auto}
 .ac-dropdown/* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -380,12 +731,66 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 .ac-item{padding:11px 16px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .ac-item:last-child{border-bottom:none}
 /* QUICK ADD MODAL */
 .qa-bg{position:fixed;inset:0;background:rgba(20,18,16,0.55);z-index:110;display:flex;align-items:flex-end;justify-content:center}
-.qa-bg.hidden{display:none}
+.qa-bg/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
+.hidden{display:none}
 .qa-box{background:#f5f3ef;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 24px calc(env(safe-area-inset-bottom,0px)+24px)}
 .qa-title{font-size:13px;font-weight:700;color:#8a8680;text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
 .qa-unit-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -406,6 +811,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qa-ac{background:#fff;border-radius:12px;border:0.5px solid #e8e5de;margin-bottom:10px;overflow:hidden;display:none}
 .qa-ac-item{padding:10px 14px;font-size:13px;color:#2d2a26;cursor:pointer;border-bottom:0.5px solid #f0ede8;font-family:'Comfortaa',sans-serif;font-weight:600}
 .qa-ac-item:last-child{border-bottom:none}
+/* PROGRESS BAR */
+.progress-bar-wrap{padding:0 20px 12px;flex-shrink:0}
+.progress-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:11px;font-weight:600;color:#a09b93}
+.progress-count{font-size:11px;font-weight:700;color:#3b6d11}
+.progress-track{height:5px;background:#e8e5de;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#639922,#3b6d11);border-radius:3px;transition:width .4s ease}
+
+/* SEARCH BAR */
+.search-wrap{padding:0 20px 10px;flex-shrink:0;position:relative}
+.search-input{width:100%;padding:10px 14px 10px 36px;border-radius:12px;border:0.5px solid #e8e5de;background:#fff;font-size:13px;color:#2d2a26;font-family:'Comfortaa',sans-serif;outline:none}
+.search-input::placeholder{color:#c5bfb5}
+.search-icon{position:absolute;left:32px;top:50%;transform:translateY(-50%);color:#c5bfb5;pointer-events:none}
+
+/* SWIPE DELETE ON LIST ITEMS */
+.list-wrap{position:relative;overflow:hidden;border-radius:16px;margin-bottom:10px}
+.list-item-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:stretch;border-radius:0 16px 16px 0;overflow:hidden}
+.list-item-del{background:#fbeae8;color:#c0432b;border:none;cursor:pointer;padding:0 20px;font-size:12px;font-weight:700;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* FLOOR PLAN TAP INDICATOR */
+.fp-tap-ring{position:absolute;width:32px;height:32px;border-radius:50%;border:3px solid #c8794a;transform:translate(-50%,-50%);pointer-events:none;animation:tapRing .6s ease-out forwards}
+@keyframes screenIn{from{opacity:.7;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapRing{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+
+/* DETAIL PHOTO INLINE PREVIEW */
+.det-photo-inline{width:100%;max-height:200px;object-fit:cover;border-radius:16px;margin-bottom:12px;display:block}
+
 .hidden{display:none}
 </style>
 </head>
@@ -438,7 +870,10 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
     <div class="nav">
       <div class="nav-title" style="text-align:left;flex:1">Projects</div>
       <div class="nav-right" style="display:flex;gap:8px">
-        <button onclick="clearApiKey()" style="background:none;border:none;cursor:pointer;padding:6px;color:#a09b93">
+        <button onclick="showBackupMenu()" style="background:none;border:none;cursor:pointer;padding:6px;color:#a09b93" title="Backup">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button onclick="clearApiKey()" style="background:none;border:none;cursor:pointer;padding:6px;color:#a09b93" title="API Key">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
         </button>
         <button class="pill pill-dark" onclick="openProjModal(null)">
@@ -449,7 +884,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
     </div>
 
     <div class="proj-body" id="projBody">
-      <div class="empty-msg">No projects yet.<br><strong>Tap New</strong> to create one.</div>
+      <div class="empty-msg">No projects yet.<br><strong>Tap + New</strong> to get started.</div>
     </div>
   </div>
 
@@ -495,6 +930,17 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><circle cx="12" cy="12" r="7"/></svg>
         Add more
       </button>
+    </div>
+    <div class="progress-bar-wrap" id="progressWrap" style="display:none">
+      <div class="progress-bar-top">
+        <span class="progress-label">Progress</span>
+        <span class="progress-count" id="progressCount">0 / 0</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="search-wrap" id="searchWrap" style="display:none">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" placeholder="Search units…" oninput="renderList()" autocomplete="off">
     </div>
     <div class="list-body" id="listBody"></div>
     <div class="rbar" id="rbar">
@@ -710,6 +1156,25 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 <input type="file" id="qaCameraFile" accept="image/*" capture="environment" class="hidden" onchange="handleQaPhoto(event)">
 <input type="file" id="qaGalleryFile" accept="image/*" class="hidden" onchange="handleQaPhoto(event)">
 
+<!-- BACKUP MODAL -->
+<div class="pm-bg hidden" id="backupBg" onclick="if(event.target===this)document.getElementById('backupBg').classList.add('hidden')">
+  <div class="pm-box">
+    <div class="m-handle"></div>
+    <div class="pm-title"><span>Backup & Restore</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <button onclick="exportBackup();document.getElementById('backupBg').classList.add('hidden')" style="width:100%;padding:15px;border-radius:14px;background:#2d2a26;color:#f5f3ef;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Export backup (.json)
+      </button>
+      <button onclick="importBackup();document.getElementById('backupBg').classList.add('hidden')" style="width:100%;padding:15px;border-radius:14px;background:#e8e5de;color:#2d2a26;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Comfortaa',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Import backup (.json)
+      </button>
+    </div>
+    <button class="btn-cancel" onclick="document.getElementById('backupBg').classList.add('hidden')" style="width:100%">Cancel</button>
+  </div>
+</div>
+
 </div><!-- .app -->
 
 <!-- AI MODAL -->
@@ -876,9 +1341,111 @@ let unitHistory = []; // remembered unit names
 let globalUnitDb = []; // shared unit database across all projects
 let multiTapMode = false, multiTapQueue = []; // {tapX,tapY,label} pending bulk add
 
-// ── PERSISTENCE (localStorage) ──────────────────
-const LS_KEY = 'fieldReportData_v3';
 
+// ── PERSISTENCE (IndexedDB – no size limit) ───────
+const DB_NAME = 'FieldReportDB', DB_VER = 1;
+let _db = null;
+function openDB() {
+  return new Promise((res, rej) => {
+    if (_db) { res(_db); return; }
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('meta'))   db.createObjectStore('meta');
+      if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
+    };
+    req.onsuccess = e => { _db = e.target.result; res(_db); };
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+function dbSet(store, key, value) {
+  return openDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(value, key);
+    tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+  }));
+}
+function dbGet(store, key) {
+  return openDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  }));
+}
+async function saveAll() {
+  try {
+    const meta = {
+      projects: projects.map(p => ({
+        id: p.id, name: p.name, phase: p.phase, location: p.location,
+        itemUid: p.itemUid || 0, unitHistory: p.unitHistory || [],
+        unitDb: p.unitDb || [],
+        items: (p.items || []).map(it => ({
+          id: it.id, title: it.title, comments: it.comments,
+          status: it.status, statusLabel: it.statusLabel,
+          tapX: it.tapX, tapY: it.tapY,
+          _compressed: it._compressed || false, hasPhoto: !!it.url
+        }))
+      })),
+      projUid, globalUnitDb
+    };
+    await dbSet('meta', 'main', meta);
+    for (const p of projects)
+      for (const it of (p.items || []))
+        if (it.url) await dbSet('photos', p.id + '_' + it.id, it.url);
+  } catch(e) { console.warn('saveAll failed:', e); }
+}
+async function loadAll() {
+  try {
+    const meta = await dbGet('meta', 'main');
+    if (!meta) return;
+    if (meta.projects) {
+      projects = meta.projects;
+      projects.forEach(p => {
+        if (!p.items) p.items = [];
+        if (!p.unitHistory) p.unitHistory = [];
+        if (!p.unitDb) p.unitDb = [];
+      });
+    }
+    if (meta.projUid) projUid = meta.projUid;
+    if (meta.globalUnitDb) globalUnitDb = meta.globalUnitDb;
+    for (const p of projects)
+      for (const it of (p.items || []))
+        if (it.hasPhoto) { const u = await dbGet('photos', p.id + '_' + it.id); if (u) it.url = u; }
+  } catch(e) { console.warn('loadAll failed:', e); }
+}
+function saveAllWithPhotos() { compressAndSave(); }
+async function exportBackup() {
+  const bk = {
+    version: 1, date: new Date().toISOString(),
+    projects: JSON.parse(JSON.stringify(projects)),
+    projUid, globalUnitDb
+  };
+  for (const p of bk.projects)
+    for (const it of (p.items || []))
+      if (it.hasPhoto && !it.url) { const u = await dbGet('photos', p.id + '_' + it.id); if (u) it.url = u; }
+  const blob = new Blob([JSON.stringify(bk)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'field-report-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+function importBackup() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try {
+      const bk = JSON.parse(await file.text());
+      if (!bk.projects) { alert('Invalid backup file'); return; }
+      if (!confirm('This will replace all current data. Continue?')) return;
+      projects = bk.projects || []; projUid = bk.projUid || 0; globalUnitDb = bk.globalUnitDb || [];
+      projects.forEach(p => { if (!p.items) p.items = []; if (!p.unitHistory) p.unitHistory = []; if (!p.unitDb) p.unitDb = []; });
+      await saveAll(); await loadAll(); renderProjects(); alert('Backup restored!');
+    } catch(err) { alert('Failed: ' + err.message); }
+  };
+  input.click();
+}
 
 // Compress image to max 800px, jpeg 60% – reduces from ~3MB to ~100KB
 function compressPhoto(dataUrl, cb) {
@@ -901,92 +1468,29 @@ function compressPhoto(dataUrl, cb) {
 }
 
 function compressAndSave() {
-  // Collect all photos that need compression
   const tasks = [];
   projects.forEach(p => {
     (p.items || []).forEach(it => {
-      if (it.url && !it._compressed) tasks.push({ it, projId: p.id });
+      if (it.url && !it._compressed) tasks.push(it);
     });
   });
-
-  let done = 0;
   if (!tasks.length) { saveAll(); return; }
-
-  tasks.forEach(({ it }) => {
+  let done = 0;
+  tasks.forEach(it => {
     compressPhoto(it.url, compressed => {
       if (compressed) { it.url = compressed; it._compressed = true; }
-      done++;
-      if (done === tasks.length) saveAll();
+      if (++done === tasks.length) saveAll();
     });
   });
 }
 
-function saveAll() {
-  try {
-    // Save metadata without photos first (always succeeds)
-    const meta = {
-      projects: projects.map(p => ({
-        id: p.id, name: p.name, phase: p.phase, location: p.location,
-        itemUid: p.itemUid || 0,
-        unitHistory: p.unitHistory || [],
-        unitDb: p.unitDb || [],
-        items: (p.items || []).map(it => ({
-          id: it.id, title: it.title, comments: it.comments,
-          status: it.status, statusLabel: it.statusLabel,
-          tapX: it.tapX, tapY: it.tapY,
-          _compressed: it._compressed || false,
-          hasPhoto: !!it.url
-        }))
-      })),
-      projUid,
-      globalUnitDb
-    };
-    localStorage.setItem(LS_KEY, JSON.stringify(meta));
-
-    // Save each photo separately with its own key
-    projects.forEach(p => {
-      (p.items || []).forEach(it => {
-        if (it.url) {
-          try {
-            localStorage.setItem('photo_' + p.id + '_' + it.id, it.url);
-          } catch(e) {
-            // Photo not saved due to quota – others remain safe
-          }
-        }
-      });
-    });
-  } catch(e) { console.warn('Save failed:', e); }
-}
+// saveAll is defined above with IndexedDB
 
 function saveAllWithPhotos() { compressAndSave(); }
 
-function loadAll() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return;
-    const data = JSON.parse(raw);
-    if (data.projects) {
-      projects = data.projects;
-      projects.forEach(p => {
-        if (!p.items) p.items = [];
-        if (!p.unitHistory) p.unitHistory = [];
-        if (!p.unitDb) p.unitDb = [];
-        // Restore photos from separate localStorage keys
-        p.items.forEach(it => {
-          if (it.hasPhoto) {
-            const saved = localStorage.getItem('photo_' + p.id + '_' + it.id);
-            if (saved) it.url = saved;
-          }
-        });
-      });
-    }
-    if (data.projUid) projUid = data.projUid;
-    if (data.globalUnitDb) globalUnitDb = data.globalUnitDb;
-  } catch(e) { console.warn('Load failed:', e); }
-}
+// loadAll is defined above with IndexedDB
 
 // ── INIT ─────────────────────────────────────────
-loadAll();
 document.getElementById('rDate').value = new Date().toISOString().split('T')[0];
 
 function saveApiKey() {
@@ -997,7 +1501,8 @@ function saveApiKey() {
   renderProjects();
 }
 
-function checkApiKey() {
+async function checkApiKey() {
+  await loadAll();
   const key = localStorage.getItem('anthropic_api_key');
   if (!key) {
     show('s-apikey');
@@ -1011,6 +1516,9 @@ function clearApiKey() {
   if (!confirm('Reset API key?')) return;
   localStorage.removeItem('anthropic_api_key');
   show('s-apikey');
+}
+function showBackupMenu() {
+  document.getElementById('backupBg').classList.remove('hidden');
 }
 
 checkApiKey();
@@ -1036,7 +1544,7 @@ function renderProjects() {
   const body = document.getElementById('projBody');
   body.innerHTML = '';
   if (!projects.length) {
-    body.innerHTML = '<div class="empty-msg">No projects yet.<br><strong>Tap New</strong> to create one.</div>';
+    body.innerHTML = '<div class="empty-msg">No projects yet.<br><strong>Tap + New</strong> to get started.</div>';
     return;
   }
   const sorted = [...projects].reverse();
@@ -1236,6 +1744,23 @@ function renderList() {
     return;
   }
 
+  // Progress bar
+  const doneCount = items.filter(x => x.status === 'done' || x.status === 'placed').length;
+  const progressWrap = document.getElementById('progressWrap');
+  const searchWrap = document.getElementById('searchWrap');
+  if (items.length > 0) {
+    progressWrap.style.display = 'block';
+    searchWrap.style.display = 'block';
+    document.getElementById('progressCount').textContent = doneCount + ' / ' + items.length;
+    document.getElementById('progressFill').style.width = Math.round(doneCount / items.length * 100) + '%';
+  } else {
+    progressWrap.style.display = 'none';
+    searchWrap.style.display = 'none';
+  }
+
+  // Search filter
+  const searchQ = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+
   // Sort: group same-base items together, sort each group by #number
   const getBase = t => (t || '').replace(/ #\d+$/, '').trim();
   const getNum  = t => { const m = (t || '').match(/ #(\d+)$/); return m ? parseInt(m[1]) : 0; };
@@ -1246,10 +1771,16 @@ function renderList() {
     groups[base].push(it);
   });
   groupOrder.forEach(base => groups[base].sort((a,b) => getNum(a.title) - getNum(b.title)));
-  const displayItems = reorderMode ? items : groupOrder.flatMap(base => groups[base]);
+  let displayItems = reorderMode ? items : groupOrder.flatMap(base => groups[base]);
+
+  // Apply search
+  if (searchQ) displayItems = displayItems.filter(it =>
+    (it.title || '').toLowerCase().includes(searchQ) ||
+    (it.comments || '').toLowerCase().includes(searchQ)
+  );
 
   // drag state
-  let dragId = null, dragEl = null, placeholder = null;
+  let dragId = null, dragEl = null;
 
   displayItems.forEach(it => {
     const d = document.createElement('div');
@@ -1271,7 +1802,32 @@ function renderList() {
     const handle = reorderMode ? `<div class="drag-handle" style="padding:0 10px 0 0;color:#c5bfb5;cursor:grab;touch-action:none;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></div>` : '';
     const arr = reorderMode ? '' : `<svg style="margin-left:6px;flex-shrink:0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>`;
     d.innerHTML = `${chk}${handle}${thumb}<div class="list-info"><div class="list-label">${esc(it.title) || 'Untitled'}</div><div class="list-sub">${esc(it.comments) || 'No description'}</div></div>${badge}${arr}`;
-    body.appendChild(d);
+    // Swipe to delete (non-reorder mode only)
+    if (!reorderMode) {
+      const wrap = document.createElement('div');
+      wrap.className = 'list-wrap';
+      const actions = document.createElement('div');
+      actions.className = 'list-item-actions';
+      actions.innerHTML = '<button class="list-item-del" onclick="quickDeleteItem(' + it.id + ')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button>';
+      wrap.appendChild(actions);
+      // swipe left
+      let sx = 0, swiped = false;
+      d.addEventListener('touchstart', e => { sx = e.touches[0].clientX; swiped = false; }, {passive:true});
+      d.addEventListener('touchmove', e => {
+        const dx = e.touches[0].clientX - sx;
+        if (dx < -8) { swiped = true; d.style.transform = 'translateX(' + Math.max(-80, dx) + 'px)'; }
+        else if (dx > 5) { d.style.transform = 'translateX(0)'; swiped = false; }
+      }, {passive:true});
+      d.addEventListener('touchend', () => {
+        if (swiped) d.style.transform = 'translateX(-80px)';
+        else d.style.transform = 'translateX(0)';
+      });
+      d.style.transition = 'transform .2s ease';
+      wrap.appendChild(d);
+      body.appendChild(wrap);
+    } else {
+      body.appendChild(d);
+    }
 
     if (reorderMode) {
       const handle = d.querySelector('.drag-handle');
@@ -1460,7 +2016,12 @@ function handleSingle(e) {
   r.readAsDataURL(f);
 }
 function removePhoto()  { const it = items.find(x => x.id === curItemId); if (it) { it.url = null; renderPhotoCard(it); } }
-function deleteItem()   { items = items.filter(x => x.id !== curItemId); saveCurProj(); saveAllWithPhotos(); goList(); }
+function deleteItem() { items = items.filter(x => x.id !== curItemId); saveCurProj(); saveAll(); goList(); }
+function quickDeleteItem(id) {
+  if (!confirm('Delete this item?')) return;
+  items = items.filter(x => x.id !== id);
+  saveCurProj(); saveAll(); renderList();
+}
 
 // ── FLOOR PLAN ───────────────────────────────────
 function triggerFpUpload() { document.getElementById('fpFile').value = ''; document.getElementById('fpFile').click(); }
@@ -1535,9 +2096,15 @@ function setupTap() {
     if (e.target.classList.contains('fp-dot')) return;
     const img = document.getElementById('fpImg');
     const rect = inner.getBoundingClientRect();
-    // Account for current scale
     tapX = (e.clientX - rect.left) / fpScale * (img.naturalWidth  / img.clientWidth);
     tapY = (e.clientY - rect.top)  / fpScale * (img.naturalHeight / img.clientHeight);
+    // Visual tap ring feedback
+    const ring = document.createElement('div');
+    ring.className = 'fp-tap-ring';
+    ring.style.left = (e.clientX - rect.left) / fpScale + 'px';
+    ring.style.top  = (e.clientY - rect.top)  / fpScale + 'px';
+    inner.appendChild(ring);
+    setTimeout(() => ring.remove(), 700);
     if (addingPart) {
       document.getElementById('modalBg').classList.remove('hidden');
       showStep('stepLoad');
