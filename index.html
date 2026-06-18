@@ -3045,6 +3045,8 @@ function confirmBulk() {
 
 // ── TAB SWITCHING ────────────────────────────────
 let ovIndex = 0;
+let _ovRendering = false;
+let _ovMoveTimer = null;
 function switchTab(tab) {
   if (tab === 'overview') {
     // Make sure items are from current project
