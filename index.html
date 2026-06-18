@@ -784,7 +784,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
 .qp-done:disabled{opacity:.4}
 .hidden{display:none}
 /* TAB BAR */
-.tab-bar{display:none;flex-shrink:0;background:transparent;padding:16px 32px calc(env(safe-area-inset-bottom,0px)+20px);position:relative;z-index:1;justify-content:center;gap:12px}
+.tab-bar{display:none;flex-shrink:0;background:transparent;padding:16px 32px 28px;position:relative;z-index:1;justify-content:center;gap:12px}
 .tab-bar.visible{display:flex}
 .tab-btn{display:flex;flex-direction:row;align-items:center;gap:8px;border:none;background:#fff;cursor:pointer;padding:14px 28px;font-family:'Comfortaa',sans-serif;border-radius:28px;box-shadow:0 4px 16px rgba(45,42,38,0.12);border:0.5px solid #e8e5de;min-height:48px}
 .tab-btn svg{color:#b5b0a8}
@@ -1748,15 +1748,47 @@ async function saveAll() {
       })),
       projUid, globalUnitDb
     };
+    // Primary: IndexedDB
     await dbSet('meta', 'main', meta);
     for (const p of projects)
       for (const it of (p.items || []))
         if (it.url) await dbSet('photos', p.id + '_' + it.id, it.url);
-  } catch(e) { console.warn('saveAll failed:', e); }
+    // Backup: localStorage (metadata only, no photos)
+    try { localStorage.setItem('fr_meta_backup', JSON.stringify(meta)); } catch(e) {}
+  } catch(e) {
+    // IndexedDB failed – try localStorage only
+    console.warn('IndexedDB save failed, using localStorage:', e);
+    try {
+      const meta = {
+        projects: projects.map(p => ({
+          id: p.id, name: p.name, phase: p.phase, location: p.location,
+          itemUid: p.itemUid || 0, unitHistory: p.unitHistory || [],
+          unitDb: p.unitDb || [],
+          items: (p.items || []).map(it => ({
+            id: it.id, title: it.title, comments: it.comments,
+            status: it.status, statusLabel: it.statusLabel,
+            tapX: it.tapX, tapY: it.tapY,
+            _compressed: it._compressed || false, hasPhoto: !!it.url
+          }))
+        })),
+        projUid, globalUnitDb
+      };
+      localStorage.setItem('fr_meta_backup', JSON.stringify(meta));
+    } catch(e2) { console.warn('localStorage also failed:', e2); }
+  }
 }
 async function loadAll() {
   try {
-    const meta = await dbGet('meta', 'main');
+    let meta = null;
+    // Try IndexedDB first
+    try { meta = await dbGet('meta', 'main'); } catch(e) { console.warn('IndexedDB load failed:', e); }
+    // Fallback to localStorage backup
+    if (!meta) {
+      try {
+        const raw = localStorage.getItem('fr_meta_backup');
+        if (raw) { meta = JSON.parse(raw); console.log('Loaded from localStorage backup'); }
+      } catch(e) {}
+    }
     if (!meta) return;
     if (meta.projects) {
       projects = meta.projects;
@@ -1768,9 +1800,12 @@ async function loadAll() {
     }
     if (meta.projUid) projUid = meta.projUid;
     if (meta.globalUnitDb) globalUnitDb = meta.globalUnitDb;
+    // Restore photos from IndexedDB
     for (const p of projects)
       for (const it of (p.items || []))
-        if (it.hasPhoto) { const u = await dbGet('photos', p.id + '_' + it.id); if (u) it.url = u; }
+        if (it.hasPhoto) {
+          try { const u = await dbGet('photos', p.id + '_' + it.id); if (u) it.url = u; } catch(e) {}
+        }
   } catch(e) { console.warn('loadAll failed:', e); }
 }
 function saveAllWithPhotos() { compressAndSave(); }
