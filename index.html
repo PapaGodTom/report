@@ -1388,7 +1388,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:#f5f3ef;font-fami
       <div class="nav-title">Overview</div>
       <div style="min-width:64px"></div>
     </div>
-    <div class="ov-body" id="ovBody"></div>
+    <div class="ov-body" id="ovBody">
+      <div class="ov-card" id="ovCard">
+        <img class="ov-photo" id="ovPhoto" alt="" style="display:none">
+        <div class="ov-photo-empty" id="ovPhotoEmpty" style="display:none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="ov-info">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <span id="ovCounter" style="font-size:12px;font-weight:600;color:#a09b93"></span>
+            <span id="ovBadge"></span>
+          </div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px">Title</div>
+          <input id="ovTitle" placeholder="Unit name" style="width:100%;font-size:17px;font-weight:700;color:#2d2a26;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;margin-bottom:14px;padding:0">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px">Comments</div>
+          <textarea id="ovComments" rows="2" placeholder="Add a comment…" style="width:100%;font-size:14px;color:#6b6760;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;resize:none;line-height:1.5;padding:0;margin-bottom:14px"></textarea>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:6px">Status</div>
+          <div style="display:flex;gap:8px">
+            <button id="ovBtnDone" onclick="ovSetStatus('done')" style="padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif">Completed</button>
+            <button id="ovBtnOther" onclick="ovSetStatus('other')" style="padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif">Other</button>
+          </div>
+        </div>
+      </div>
+      <div class="ov-empty" id="ovEmpty" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>No items yet</span>
+      </div>
+    </div>
     <div class="ov-nav" id="ovNav" style="display:none">
       <button class="ov-prev" onclick="ovMove(-1)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -3100,134 +3126,103 @@ function switchTab(tab) {
 }
 
 // ── OVERVIEW ─────────────────────────────────────
+function ovSetStatus(key) {
+  const it = items[ovIndex]; if (!it) return;
+  it.status = key;
+  if (key === 'done' && it.comments === (it.title || '') + ' placed') it.comments = (it.title || '') + ' completed';
+  saveCurProj(); saveAll();
+  updateOvButtons(it);
+}
+
+function updateOvButtons(it) {
+  const btnDone  = document.getElementById('ovBtnDone');
+  const btnOther = document.getElementById('ovBtnOther');
+  if (!btnDone || !btnOther) return;
+  btnDone.style.cssText  = 'padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif;' + (it.status === 'done'  ? 'background:#e6f3de;color:#3b6d11' : 'background:#f0ede8;color:#a09b93');
+  btnOther.style.cssText = 'padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif;' + (it.status === 'other' ? 'background:#e8e5de;color:#2d2a26' : 'background:#f0ede8;color:#a09b93');
+  btnOther.textContent = it.statusLabel || 'Other';
+}
+
 function renderOverview() {
-  if (_ovRendering) return;
-  _ovRendering = true;
-  const body = document.getElementById('ovBody');
-  const nav  = document.getElementById('ovNav');
-  const expBtn = document.getElementById('ovExportBtn');
+  const card    = document.getElementById('ovCard');
+  const empty   = document.getElementById('ovEmpty');
+  const nav     = document.getElementById('ovNav');
+  const expBtn  = document.getElementById('ovExportBtn');
+
   if (!items.length) {
-    body.innerHTML = '<div class="ov-empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>No items yet</span></div>';
-    nav.style.display = 'none'; expBtn.classList.add('hidden');
-    _ovRendering = false; return;
+    card.style.display  = 'none';
+    empty.style.display = 'flex';
+    nav.style.display   = 'none';
+    expBtn.classList.add('hidden');
+    return;
   }
-  nav.style.display = 'flex';
+
+  card.style.display  = 'block';
+  empty.style.display = 'none';
+  nav.style.display   = 'flex';
   expBtn.classList.remove('hidden');
+
   const it = items[ovIndex];
-  const st = it.status === 'done'
+
+  // Photo
+  const photo    = document.getElementById('ovPhoto');
+  const photoEmp = document.getElementById('ovPhotoEmpty');
+  if (it.url) {
+    photo.src = it.url; photo.style.display = 'block';
+    photoEmp.style.display = 'none';
+  } else {
+    photo.style.display = 'none';
+    photoEmp.style.display = 'flex';
+  }
+
+  // Counter + badge
+  document.getElementById('ovCounter').textContent = (ovIndex + 1) + ' / ' + items.length;
+  const badge = it.status === 'done'
     ? '<span class="badge badge-done">Completed</span>'
+    : it.status === 'placed'
+    ? '<span class="badge badge-placed">Placed</span>'
     : it.status === 'other'
     ? '<span class="badge badge-other">' + esc(it.statusLabel || 'Other') + '</span>' : '';
-  body.innerHTML = '';
+  document.getElementById('ovBadge').innerHTML = badge;
 
-  // card
-  const card = document.createElement('div');
-  card.className = 'ov-card';
+  // Title + comments – only update if not focused
+  const titleEl = document.getElementById('ovTitle');
+  const commEl  = document.getElementById('ovComments');
+  if (document.activeElement !== titleEl) titleEl.value = it.title || '';
+  if (document.activeElement !== commEl)  commEl.value  = it.comments || '';
 
-  // photo
-  if (it.url) {
-    const img = document.createElement('img');
-    img.className = 'ov-photo'; img.src = it.url; img.alt = '';
-    card.appendChild(img);
-  } else {
-    const ep = document.createElement('div');
-    ep.className = 'ov-photo-empty';
-    ep.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
-    card.appendChild(ep);
-  }
+  // Wire up save on change (replace handlers)
+  titleEl.oninput = e => { it.title = e.target.value; saveCurProj(); saveAll(); };
+  commEl.oninput  = e => { it.comments = e.target.value; saveCurProj(); saveAll(); };
 
-  // info section with editable fields
-  const info = document.createElement('div');
-  info.className = 'ov-info';
+  // Status buttons
+  updateOvButtons(it);
 
-  // counter + badge row
-  const topRow = document.createElement('div');
-  topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px';
-  topRow.innerHTML = '<span class="ov-counter" style="font-size:12px;font-weight:600;color:#a09b93">' + (ovIndex+1) + ' / ' + items.length + '</span>' + st;
-  info.appendChild(topRow);
-
-  // title field
-  const titleLbl = document.createElement('div');
-  titleLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px';
-  titleLbl.textContent = 'Title';
-  info.appendChild(titleLbl);
-
-  const titleInput = document.createElement('input');
-  titleInput.value = it.title || '';
-  titleInput.placeholder = 'Unit name';
-  titleInput.style.cssText = 'width:100%;font-size:17px;font-weight:700;color:#2d2a26;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;margin-bottom:14px;padding:0';
-  titleInput.oninput = (e) => {
-    it.title = e.target.value;
-  };
-  info.appendChild(titleInput);
-
-  // comments field
-  const commLbl = document.createElement('div');
-  commLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:5px';
-  commLbl.textContent = 'Comments';
-  info.appendChild(commLbl);
-
-  const commInput = document.createElement('textarea');
-  commInput.value = it.comments || '';
-  commInput.placeholder = 'Add a comment…';
-  commInput.rows = 2;
-  commInput.style.cssText = 'width:100%;font-size:14px;color:#6b6760;border:none;background:transparent;outline:none;font-family:Comfortaa,sans-serif;resize:none;line-height:1.5;padding:0;margin-bottom:14px';
-  commInput.oninput = (e) => {
-    it.comments = e.target.value;
-  };
-  info.appendChild(commInput);
-
-  // status row
-  const stLbl = document.createElement('div');
-  stLbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#b5b0a8;margin-bottom:6px';
-  stLbl.textContent = 'Status';
-  info.appendChild(stLbl);
-
-  const stRow = document.createElement('div');
-  stRow.style.cssText = 'display:flex;gap:8px';
-  ['done','other'].forEach(key => {
-    const btn = document.createElement('button');
-    const isActive = it.status === key;
-    btn.style.cssText = 'padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:Comfortaa,sans-serif;' +
-      (key === 'done'
-        ? (isActive ? 'background:#e6f3de;color:#3b6d11;' : 'background:#f0ede8;color:#a09b93;')
-        : (isActive ? 'background:#e8e5de;color:#2d2a26;' : 'background:#f0ede8;color:#a09b93;'));
-    btn.textContent = key === 'done' ? 'Completed' : (it.statusLabel || 'Other');
-    btn.onclick = () => {
-      it.status = key;
-      if (key === 'done') it.comments = (it.title || '') + ' completed';
-      renderOverview();
-    };
-    stRow.appendChild(btn);
-  });
-  info.appendChild(stRow);
-
-  card.appendChild(info);
-  body.appendChild(card);
-
-  // nav buttons
-  document.querySelector('.ov-prev').disabled = ovIndex === 0;
-  document.querySelector('.ov-prev').style.opacity = ovIndex === 0 ? '0.35' : '1';
-  const isLast = ovIndex === items.length - 1;
+  // Nav buttons
+  const prevBtn = document.querySelector('.ov-prev');
   const nextBtn = document.querySelector('.ov-next');
-  if (isLast) {
-    nextBtn.innerHTML = 'Done <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    nextBtn.style.background = '#639922';
-  } else {
-    nextBtn.innerHTML = 'Next <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
-    nextBtn.style.background = '#2d2a26';
+  if (prevBtn) { prevBtn.disabled = ovIndex === 0; prevBtn.style.opacity = ovIndex === 0 ? '0.35' : '1'; }
+  if (nextBtn) {
+    const isLast = ovIndex === items.length - 1;
+    nextBtn.innerHTML = isLast
+      ? 'Done <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : 'Next <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+    nextBtn.style.background = isLast ? '#639922' : '#2d2a26';
   }
-  _ovRendering = false;
 }
 
 function ovMove(dir) {
   if (dir === 1 && ovIndex === items.length - 1) { goExport(); return; }
+  // Save current edits before moving
+  const it = items[ovIndex];
+  if (it) {
+    const t = document.getElementById('ovTitle');
+    const c = document.getElementById('ovComments');
+    if (t) it.title = t.value;
+    if (c) it.comments = c.value;
+  }
   ovIndex = Math.max(0, Math.min(items.length - 1, ovIndex + dir));
-  // Debounce rapid taps – wait 80ms before rendering
-  clearTimeout(_ovMoveTimer);
-  _ovMoveTimer = setTimeout(() => {
-    if (!_ovRendering) renderOverview();
-  }, 80);
+  renderOverview();
 }
 
 // ── COPY PROJECT MODAL ────────────────────────────
